@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 using UnityEngine;
 
 
@@ -7,8 +9,10 @@ public class CardController : MonoBehaviour   ///// Controls what the physical c
     private GameObject CameraReferencePoint;
 
     private Vector3 targetPosition;
+    private Vector3 handPosition;
     public bool isInHand = false;
     public float moveSpeed = 5f;
+    public float hoverHeight = 0.3f;
 
 
     void Start()
@@ -32,8 +36,19 @@ public class CardController : MonoBehaviour   ///// Controls what the physical c
 
     public void PlaceInHand(Vector3 pos)
     {
+        handPosition = pos;
         targetPosition = pos;
         isInHand = true;
+    }
+
+    public void Hover()
+    {
+        targetPosition = handPosition + (-Vector3.forward * .1f) + (Vector3.up * hoverHeight);
+    }
+
+    public void Unhover()
+    {
+        targetPosition = handPosition;
     }
 
 
@@ -47,5 +62,25 @@ public class CardController : MonoBehaviour   ///// Controls what the physical c
     private void PositionCard()
     {
         transform.position = Vector3.Lerp(transform.position, targetPosition, Time.deltaTime * moveSpeed);
+    }
+
+    private CardController hoveredCard;
+
+    private void TrackMouse()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        CardController card = null;
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+            card = hit.collider.GetComponent<CardController>();
+
+        if (card != hoveredCard)
+        {
+            hoveredCard?.Unhover();
+            hoveredCard = card;
+            hoveredCard?.Hover();
+        }
+
+        
     }
 }
