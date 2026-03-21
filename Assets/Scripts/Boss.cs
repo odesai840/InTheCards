@@ -5,9 +5,9 @@ public class Boss : MonoBehaviour
     [SerializeField] private int max_health;
     private int health;
 
-    public void Damage(int damage)
+    public void Damage(int amount)
     {
-        health -= damage;
+        health -= amount;
     }
     
     void Start()
