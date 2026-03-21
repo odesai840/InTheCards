@@ -1,68 +1,70 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-using System.Diagnostics;
+using System.Collections.Generic;
 
 
 
-
-
-
-
-
-public class CardSpawn : MonoBehaviour
+public class CardManager : MonoBehaviour   //// Controls the spawning and use of the cards
 {
 
     public GameObject cardPreFab;
 
-    [SerializeField] GameObject FlippedCardPos;
+    [SerializeField] GameObject cardSpawnPoint;  // where cards fly in from
+    [SerializeField] GameObject handCenter;      //Center of hands in card
 
-    //private bool isDoingAnimation; // 
+    public float cardSpacing = 1.5f;
 
-    private int cardsInHand;  // used to track number of cards in hand
+    private readonly List<GameObject> handCards = new List<GameObject>();
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
-        FlippedCardPos = GameObject.Find("FlippedCardPos");
-        
 
         for (int i = 0; i < 5; i++)
         {
-            FlipNextCard(); // Change Logic here when actual cards get chosen
+            FlipNextCard();
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             FlipNextCard();
         }
-
-        if (Keyboard.current.shiftKey.wasPressedThisFrame)
-        {
-            Quaternion spawnRot = Quaternion.Euler(0f, 0f, 90f);
-            GameObject card = Instantiate(cardPreFab, transform.position, spawnRot);
-        }
-
-        
     }
 
-    
 
-    
     private void FlipNextCard()
     {
-        cardsInHand++;
         Quaternion spawnRot = Quaternion.Euler(0f, 0f, 90f);
         GameObject newCard = Instantiate(cardPreFab, transform.position, spawnRot);
-        Vector3 cardSpawn = transform.position;
-        Vector3 endPos = FlippedCardPos.transform.position; /// REPLACE THIS FOR REAL POS
+
+        handCards.Add(newCard);
+        RepositionAllCards();
+
+        Vector3 startPos = transform.position;
+        Vector3 endPos = handCenter.transform.position;
+
+        StartCoroutine(MoveCard(newCard, startPos, endPos, .5f));
+    }
 
 
-        StartCoroutine(MoveCard(newCard, cardSpawn, endPos, .5f));
+    private void RepositionAllCards()
+    {
+        int count = handCards.Count;
+        float totalWidth = (count - 1) * cardSpacing;
+
+        for (int i = 0; i < count; i++)
+        {
+            float xOffset = i * cardSpacing - totalWidth / 2f;
+            Vector3 targetPos = handCenter.transform.position + new Vector3(xOffset, 0f, 0f);
+
+            CardController cc = handCards[i].GetComponent<CardController>();
+            if (cc != null)
+                cc.SetTargetPosition(targetPos);
+        }
     }
 
 
@@ -86,7 +88,7 @@ public class CardSpawn : MonoBehaviour
 
         StartCoroutine(FlipCard(newCard, .3f));
     }
-    
+
     IEnumerator FlipCard(GameObject newCard, float duration)
     {
         float elapsed = 0f;
@@ -97,12 +99,29 @@ public class CardSpawn : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-
             newCard.transform.rotation = Quaternion.Lerp(startRot, endRot, t);
             yield return null;
         }
+
+        newCard.transform.rotation = endRot;
+
+        
+        CardController cc = newCard.GetComponent<CardController>();
+        if (cc != null)
+            cc.isInHand = true;
     }
 
-    
-    
+
+    public void RemoveCard(GameObject card)
+    {
+        handCards.Remove(card);
+        RepositionAllCards();
+        Destroy(card);
+    }
+
+
+    public int GetCardsInHand()
+    {
+        return handCards.Count;
+    }
 }
