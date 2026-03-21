@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebbce7eeff8c8f344bf7d51a70a52197, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  cardPreFab: {fileID: 919132149155446097, guid: 22e1d24616493ea48938045c9de44273, type: 3}
+  cardPreFab: {fileID: 919132149155446097, guid: 6eb2f95b4be13ff418d77364aab3b376, type: 3}
   CameraReferencePoint: {fileID: 387900172}
 --- !u!1 &387900172
 GameObject:
