@@ -413,6 +413,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   max_health: 0
+  max_bloons: 0
+  bloon_regen_interval: 2
+  bloon_regen_amount: 1
   boss: {fileID: 1322966933}
   max_hand: 5
 --- !u!4 &1190372199
@@ -475,7 +478,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss
   max_health: 0
-  player: {fileID: 0}
+  player: {fileID: 1190372198}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
