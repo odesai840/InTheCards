@@ -33,7 +33,6 @@ public class Boss : MonoBehaviour
     [SerializeField] private Player player;
 
     private Action[] all_actions;
-    private Action current_action = new Action(ActionType.NONE, 0, 0);
     private ActionType last_action_type = ActionType.NONE;
     
     void Start()
@@ -51,7 +50,6 @@ public class Boss : MonoBehaviour
         health -= amount;
         health = Mathf.Clamp(health, 0, max_health);
     }
-
     public void Heal(int amount)
     {
         health += amount;

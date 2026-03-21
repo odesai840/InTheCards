@@ -32,8 +32,15 @@ public class Card
 
 public class Player : MonoBehaviour
 {
+    private float timer = 0.0f;
+    
     [SerializeField] private int max_health;
     private int health;
+
+    [SerializeField] private int max_bloons;
+    private int bloons;
+    [SerializeField] private int bloon_regen_interval = 2;
+    [SerializeField] private int bloon_regen_amount = 1;
 
     [SerializeField] private Boss boss;
 
@@ -41,7 +48,15 @@ public class Player : MonoBehaviour
     private Card[] hand;
     private Card[] all_cards;
     private CardType last_received_card_type;
-    
+
+    private void Update()
+    {
+        timer += Time.deltaTime;
+        int second = Mathf.RoundToInt(timer);
+
+        if (second % bloon_regen_interval == 0) Earn(bloon_regen_amount);
+    }
+
     void Start()
     {
         health = max_health;
@@ -54,18 +69,6 @@ public class Player : MonoBehaviour
         all_cards[Convert.ToInt32(CardType.GIEV_BLOONS)] = new Card(CardType.GIEV_BLOONS, 2, 5, 100);
         
         ShuffleCards();
-    }
-
-    public void Damage(int amount)
-    {
-        health -= amount;
-        health = Mathf.Clamp(health, 0, max_health);
-    }
-
-    public void Heal(int amount)
-    {
-        health += amount;
-        health = Mathf.Clamp(health, 0, max_health);
     }
 
     public void ShuffleCards()
@@ -97,7 +100,11 @@ public class Player : MonoBehaviour
             case CardType.SHUF:
                 ShuffleCards();
                 break;
+            case CardType.GIEV_BLOONS:
+                Earn(card.action_value);
+                break;
         }
+        Spend(card.cost);
 
         Card random_card = all_cards[0];
         while (random_card.type == last_received_card_type)
@@ -105,6 +112,31 @@ public class Player : MonoBehaviour
             random_card = all_cards[Random.Range(0, all_cards.Length)];
         }
         last_received_card_type = random_card.type;
+        
+        Manage();
         return random_card;
+    }
+    
+    public void Damage(int amount)
+    {
+        health -= amount;
+    }
+    public void Heal(int amount)
+    {
+        health += amount;
+    }
+    public void Spend(int amount)
+    {
+        bloons -=  amount;
+    }
+    public void Earn(int amount)
+    {
+        bloons += amount;
+    }
+
+    private void Manage()
+    {
+        health = Mathf.Clamp(health, 0, max_health);
+        bloons = Mathf.Clamp(bloons, 0, max_bloons);
     }
 }
