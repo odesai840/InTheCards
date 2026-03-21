@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 
 
+
+
+
 public class CardManager : MonoBehaviour   //// Controls the spawning and use of the cards
 {
 
@@ -30,8 +33,34 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
     void Update()
     {
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
             FlipNextCard();
+
+        TrackMouse();
+    }
+
+    private CardController hoveredCard;
+
+    private void TrackMouse()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        CardController card = null;
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+            card = hit.collider.GetComponent<CardController>();
+
+        if (card != hoveredCard)
+        {
+            hoveredCard?.Unhover();
+            hoveredCard = card;
+            hoveredCard?.Hover();
+        }
+
+        if (hoveredCard != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            GameObject cardObj = hoveredCard.gameObject;
+            Vector3 cardPos = hoveredCard.transform.position;
+            hoveredCard = null;
+            StartCoroutine(PlayCard(cardObj, cardPos, .4f));
         }
     }
 
@@ -53,17 +82,30 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
     private void RepositionAllCards()
     {
+
+        float currentCardSpacing = cardSpacing;
+
         int count = handCards.Count;
-        float totalWidth = (count - 1) * cardSpacing;
+
+        if (count >= 8)
+        {
+            currentCardSpacing = cardSpacing * .75f;
+        } else
+        {
+            currentCardSpacing = cardSpacing;
+        }
+
+        float totalWidth = (count - 1) * currentCardSpacing;
 
         for (int i = 0; i < count; i++)
         {
-            float xOffset = i * cardSpacing - totalWidth / 2f;
+            
+            float xOffset = i * currentCardSpacing - totalWidth / 2f;
             Vector3 targetPos = handCenter.transform.position + new Vector3(xOffset, 0f, 0f);
 
             CardController cc = handCards[i].GetComponent<CardController>();
             if (cc != null)
-                cc.SetTargetPosition(targetPos);
+                cc.PlaceInHand(targetPos);
         }
     }
 
@@ -111,6 +153,29 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
             cc.isInHand = true;
     }
 
+
+    IEnumerator PlayCard(GameObject card, Vector3 startPos, float duration)
+    {
+        float elapsed = 0f;
+        Quaternion startRot = card.transform.rotation;
+        Quaternion endRot = startRot * Quaternion.Euler(0f, -90f, 0f); 
+
+        Vector3 endPos = new Vector3(0f, handCenter.transform.position.y, startPos.z + 2);
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            card.transform.rotation = Quaternion.Lerp(startRot, endRot, t);
+            card.transform.position = Vector3.Lerp(startPos, endPos, t);
+            yield return null;
+        }
+        if (elapsed >= duration) 
+        {
+            RemoveCard(card);
+        }
+        
+    }
 
     public void RemoveCard(GameObject card)
     {
