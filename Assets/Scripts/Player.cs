@@ -38,20 +38,18 @@ public class Player : MonoBehaviour
     [SerializeField] private int max_hand = 5;
     private Card[] hand;
     private Card[] all_cards;
+    private CardType last_received_card_type;
     
     void Start()
     {
         health = max_health;
 
+        all_cards = new Card[Convert.ToInt32(CardType.END)];
         all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 100);
         all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 5, 100);
         all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 3, 30, 100);
         all_cards[Convert.ToInt32(CardType.SHUFFLE)] = new Card(CardType.SHUFFLE, 3, 0, 100);
-    }
-
-    void Update()
-    {
-        
+        ShuffleCards();
     }
 
     public void Damage(int amount)
@@ -68,9 +66,12 @@ public class Player : MonoBehaviour
 
     public void ShuffleCards()
     {
-        Card[] random_hand =  new Card[all_cards.Length];
+        Card[] random_hand =  new Card[max_hand];
         for (int i = 0; i < max_hand; i++)
-            random_hand[i] = all_cards[i];
+        {
+            random_hand[i] = all_cards[Random.Range(0, all_cards.Length)];
+            last_received_card_type = random_hand[i].type;
+        }
         hand = random_hand;
     }
 
@@ -94,7 +95,12 @@ public class Player : MonoBehaviour
                 break;
         }
 
-        int random_card = Random.Range(0, all_cards.Length - 1);
-        return all_cards[random_card];
+        Card random_card = all_cards[0];
+        while (random_card.type == last_received_card_type)
+        {
+            random_card = all_cards[Random.Range(0, all_cards.Length)];
+        }
+        last_received_card_type = random_card.type;
+        return random_card;
     }
 }
