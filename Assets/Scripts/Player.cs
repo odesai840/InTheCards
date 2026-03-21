@@ -8,11 +8,13 @@ public enum CardType
     HEAL_PLR,
     DMG_BOSS,
     DMG_BOSS_BIG,
-    SHUFFLE,
+    SHUF,
+    GIEV_BLOONS,
     END
 }
 
-[System.Serializable] public class Card
+[System.Serializable]
+public class Card
 {
     public CardType type = CardType.NONE;
     public int cost = 0;
@@ -48,7 +50,9 @@ public class Player : MonoBehaviour
         all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 100);
         all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 5, 100);
         all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 3, 30, 100);
-        all_cards[Convert.ToInt32(CardType.SHUFFLE)] = new Card(CardType.SHUFFLE, 3, 0, 100);
+        all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 100);
+        all_cards[Convert.ToInt32(CardType.GIEV_BLOONS)] = new Card(CardType.GIEV_BLOONS, 2, 5, 100);
+        
         ShuffleCards();
     }
 
@@ -90,7 +94,7 @@ public class Player : MonoBehaviour
             case CardType.DMG_BOSS_BIG:
                 boss.Damage(card.action_value);
                 break;
-            case CardType.SHUFFLE:
+            case CardType.SHUF:
                 ShuffleCards();
                 break;
         }
