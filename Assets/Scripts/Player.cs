@@ -136,6 +136,17 @@ public class Player : MonoBehaviour
                 Manage();
             }
         }
+
+        if (health <= 0)
+        {
+            if (endure_active)
+            {
+                health = 1;
+                endure_active = false;
+            }
+            else
+                SceneManager.LoadScene("DeathScene");
+        }
     }
 
     public void ChooseCard(Card card)
@@ -240,16 +251,7 @@ public class Player : MonoBehaviour
         else
             parry = false;
         
-        if (health <= 0)
-        {
-            if (endure_active)
-            {
-                health = 1;
-                endure_active = false;
-            }
-            else
-                SceneManager.LoadScene("DeathScene");
-        }
+        
         
         DisplayChips();
     }
