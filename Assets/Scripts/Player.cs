@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
 
 public enum CardType
@@ -60,7 +61,7 @@ public class Player : MonoBehaviour
     private CardType last_received_card_type;
 
     //values for damage calculation
-    private int dmg_mult = 0;
+    private int dmg_mult = 1;
     private int dmg_flat = 0;
     private int dmg_flat_duration = 0;
 
@@ -70,7 +71,11 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject bloons_spawn;
     [SerializeField] private GameObject bloon_prefab;
     private GameObject[] bloons_pool;
-    
+
+    [SerializeField] private GameObject chips_spawn;
+    [SerializeField] private GameObject chip_prefab;
+    private GameObject[] chips_pool;
+
     [SerializeField] private CardManager card_manager;
 
     private void Awake()
@@ -96,12 +101,21 @@ public class Player : MonoBehaviour
     {
         health = max_health;
         bloons = 0;
-        
+
         bloons_pool = new GameObject[max_bloons];
-        for(int i = 0; i < max_bloons; i++)
+        for (int i = 0; i < max_bloons; i++)
         {
-            bloons_pool[i] = Instantiate(bloon_prefab, transform.position,  Quaternion.AngleAxis(0.0f, Vector3.up));
+            bloons_pool[i] = Instantiate(bloon_prefab, new Vector3(0.0f, -1000.0f, 0.0f), Quaternion.AngleAxis(0.0f, Vector3.up));
         }
+
+        chips_pool = new GameObject[max_health/10];
+        for (int i = 0; i < max_health / 10; i++)
+        {
+            chips_pool[i] = Instantiate(chip_prefab, new Vector3(0.0f, -1000.0f, 0.0f), Quaternion.AngleAxis(0.0f, Vector3.up));
+        }
+        
+        DisplayChips();
+        DisplayBloons();
     }
 
     private void Update()
@@ -116,6 +130,12 @@ public class Player : MonoBehaviour
                 Earn(bloon_regen_amount);
                 Manage();
             }
+        }
+
+        if (Keyboard.current.fKey.wasPressedThisFrame)
+        {
+            Damage(1);
+            Debug.Log(health);
         }
     }
 
@@ -135,8 +155,8 @@ public class Player : MonoBehaviour
             case CardType.FIREBALL:
                 //damage formula
                 boss.Damage((card.action_value + dmg_flat) * dmg_mult);
-                //after damage is done, the dmg multiplier is set to 0
-                dmg_mult = 0;
+                //after damage is done, the dmg multiplier is set to 1
+                dmg_mult = 1;
                 //however if damage flat buff is in play, 
                 //use a counter to count down the duration of the buff based on the number of times damage has been done
                 dmg_flat_duration--;
@@ -169,13 +189,14 @@ public class Player : MonoBehaviour
         Spend(card.cost);
         Manage();
     }
-    
+
     public Card NextCard()
     {
         int total = 0;
         for (int i = 1; i < all_cards.Length; i++)
         {
-            if (all_cards[i] == null || all_cards[i].type == CardType.NONE || all_cards[i].type == CardType.END) continue;
+            if (all_cards[i] == null || all_cards[i].type == CardType.NONE ||
+                all_cards[i].type == CardType.END) continue;
             total += all_cards[i].frequency;
         }
 
@@ -183,7 +204,8 @@ public class Player : MonoBehaviour
         int cumulative = 0;
         for (int i = 1; i < all_cards.Length; i++)
         {
-            if (all_cards[i] == null || all_cards[i].type == CardType.NONE || all_cards[i].type == CardType.END) continue;
+            if (all_cards[i] == null || all_cards[i].type == CardType.NONE ||
+                all_cards[i].type == CardType.END) continue;
             cumulative += all_cards[i].frequency;
             last_received_card_type = all_cards[i].type;
             if (roll < cumulative) return all_cards[i];
@@ -193,21 +215,19 @@ public class Player : MonoBehaviour
         return all_cards[1];
     }
 
-    public void ShuffleCards()
+    public void ShuffleCards(bool initial = false)
     {
-        List<GameObject> hand_cards = card_manager.GetHandCards();
-        for (int i = 0; i < hand_cards.Count; i++)
-        {
-            StartCoroutine(card_manager.PlayCard(hand_cards[i], hand_cards[i].transform.position, .4f));
-        }
-        
-        for (int i = 0; i < max_hand; i++)
-        {
+        List<GameObject> snapshot = new List<GameObject>(card_manager.GetHandCards());
+        card_manager.GetHandCards().Clear();
+
+        foreach (GameObject card in snapshot)
+            StartCoroutine(card_manager.PlayCard(card, card.transform.position, .4f));
+
+        int count = initial ? max_hand : max_hand - 1;
+        for (int i = 0; i < count; i++)
             card_manager.FlipNextCard();
-            card_manager.RepositionAllCards();
-        }
     }
-    
+
     public void Damage(int amount)
     {
         health -= amount;
@@ -216,16 +236,21 @@ public class Player : MonoBehaviour
             health = 1;
             endure_active = false;
         }
+        DisplayChips();
     }
+
     private void Heal(int amount)
     {
         health += amount;
+        DisplayChips();
     }
+
     private void Spend(int amount)
     {
-        bloons -=  amount;
+        bloons -= amount;
         DisplayBloons();
     }
+
     private void Earn(int amount)
     {
         bloons += amount;
@@ -240,12 +265,31 @@ public class Player : MonoBehaviour
 
     public Card[] GetHand()
     {
-        return hand; 
+        return hand;
     }
 
     public Card GetFirstCard()
     {
         return all_cards[1];
+    }
+
+    private void DisplayChips() // display health
+    {
+        Manage();
+        for (int i = 0; i < max_health / 10; i++)
+        {
+            if (i < Mathf.CeilToInt(health / 10f))
+            {
+                float offsetx = i * -0.015f;
+                float offsety = i * 0.05f;                
+                chips_pool[i].transform.position = new Vector3(chips_spawn.transform.position.x + offsetx, chips_spawn.transform.position.y + offsety, chips_spawn.transform.position.z);
+                chips_pool[i].transform.eulerAngles = new Vector3(46, 58, 14);
+            }
+            else
+            {
+                chips_pool[i].transform.position = new Vector3(0.0f, -1000.0f, 0.0f);
+            }
+        }
     }
 
     private void DisplayBloons()

@@ -23,12 +23,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
     void Start()
     {
-        player.ShuffleCards();
-        for (int i = 0; i < 5; i++)
-        {
-            FlipNextCard();
-        }
-        
+        player.ShuffleCards(true);
     }
 
     void Update()
@@ -61,6 +56,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
             if (!hoveredCard.used)
             {
                 hoveredCard.used = true;
+                Debug.Log(hoveredCard.card.type);
                 player.ChooseCard(hoveredCard.card);
                 GameObject cardObj = hoveredCard.gameObject;
                 Vector3 cardPos = hoveredCard.transform.position;
@@ -82,8 +78,6 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
         newCardObject.GetComponent<CardController>().card = newCard;
         newCardObject.GetComponent<CardController>().used = false;
         newCardObject.GetComponent<Renderer>().material.mainTexture = newCard.texture;
-
-        UnityEngine.Debug.Log(newCard.type);
 
         handCards.Add(newCardObject);
         RepositionAllCards();
@@ -133,6 +127,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
         while (elapsed < duration)
         {
+            if (newCard == null) yield break;
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
             newCard.transform.position = Vector3.Lerp(startPos, endPos, t);
@@ -140,6 +135,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
             yield return null;
         }
 
+        if (newCard == null) yield break;
         newCard.transform.position = endPos;
         newCard.transform.rotation = endRot;
 
@@ -154,12 +150,14 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
         while (elapsed < duration)
         {
+            if (newCard == null) yield break;
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
             newCard.transform.rotation = Quaternion.Lerp(startRot, endRot, t);
             yield return null;
         }
 
+        if (newCard == null) yield break;
         newCard.transform.rotation = endRot;
 
         
