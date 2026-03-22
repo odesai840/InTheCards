@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Random = UnityEngine.Random;
+using UnityEngine.SceneManagement;
 
 public enum ActionType
 {
@@ -96,6 +97,11 @@ public class Boss : MonoBehaviour
 
     void Update()
     {
+        if (health <= 0)
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+
         timer += Time.deltaTime;
         int second = Mathf.FloorToInt(timer); 
 
@@ -108,12 +114,14 @@ public class Boss : MonoBehaviour
 
         
 
-        action_timer += Time.deltaTime; 
-        if (action_timer >= action_interval) 
+        action_timer += Time.deltaTime;
+        if (action_timer >= action_interval)
         {
-            action_timer = 0f; 
-            current_action = ExcutePreamble(current_action); 
+            action_timer = 0f;
+            current_action = ExcutePreamble(current_action);
         }
+
+        
 
 
         
