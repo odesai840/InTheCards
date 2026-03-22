@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -48,6 +49,9 @@ public class Boss : MonoBehaviour
     private Action[] all_actions;
     private ActionType last_action_type = ActionType.NONE;
     
+    [SerializeField] private GameObject poker_chip_prefab;
+    private GameObject[] chip_pool;
+    
     void Start()
     {
         all_actions = new Action[Convert.ToInt32(ActionType.END)];
@@ -56,6 +60,12 @@ public class Boss : MonoBehaviour
         all_actions[Convert.ToInt32(ActionType.DMG_PLR_BIG_BIG)] = new Action(ActionType.DMG_PLR_BIG_BIG, 10, 50, 10);
         all_actions[Convert.ToInt32(ActionType.HEAL_BOSS)] = new Action(ActionType.HEAL_BOSS, 1, 10, 100);
         all_actions[Convert.ToInt32(ActionType.SHUF_PLR)] = new Action(ActionType.SHUF_PLR, 8, 0, 20);
+        
+        chip_pool = new GameObject[25];
+        for(int i = 0; i < 25; i++)
+        {
+            chip_pool[i] = Instantiate(poker_chip_prefab, transform.position,  Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up));
+        }
     }
 
     void Update()
@@ -84,6 +94,9 @@ public class Boss : MonoBehaviour
             case ActionType.END:
                 break;
             case ActionType.DMG_PLR:
+                PlayDamagePlayerAnim();
+                player.Damage(action.action_value);
+                break;
             case ActionType.DMG_PLR_BIG: 
             case  ActionType.DMG_PLR_BIG_BIG:
                 player.Damage(action.action_value);
@@ -135,6 +148,45 @@ public class Boss : MonoBehaviour
             
         if (action.cost > chips || action.type == last_action_type) weight = 0.0f;
         return weight;
+    }
+    
+    private void PlayDamagePlayerAnim()
+    {
+        StartCoroutine(MoveChipRoutine(0.75f, i => ResetChips()));
+    }
+    
+    private IEnumerator MoveChipRoutine(float duration, Action<int> callback)
+    {
+        float elapsed_time = 0.0f;
+        Vector3[] target_points = new Vector3[chip_pool.Length];
+        
+        for(int i = 0; i < chip_pool.Length; i++){
+            Vector2 point = Random.insideUnitCircle * 0.75f;
+            target_points[i] = new Vector3(0.0f, point.y, point.x);
+            target_points[i] += player.transform.position;
+        }
+        
+        while (elapsed_time < duration)
+        {
+            for(int i = 0; i < chip_pool.Length; i++){
+                chip_pool[i].transform.position = Vector3.Lerp(chip_pool[i].transform.position, target_points[i], 5.0f * Time.deltaTime);
+                chip_pool[i].transform.RotateAround(chip_pool[i].transform.position, Vector3.up, 5.0f);
+            }
+            
+            elapsed_time += Time.deltaTime;
+            
+            yield return null;
+        }
+        
+        callback(1);
+    }
+    
+    private void ResetChips()
+    {
+        foreach (GameObject chip in chip_pool)
+        {
+            chip.transform.position = transform.position;
+        }
     }
     
     public void Damage(int amount)

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 693b81de0efaaac4f9d3a57b2c092df6
+guid: 35015a9c4511f79478fe4767837718c0
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
@@ -7,18 +7,23 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: blade
-    second: {fileID: 2100000, guid: cd497bbbc465fdf4488c0bc8ebb03b30, type: 2}
+      name: Material.001
+    second: {fileID: 2100000, guid: e32c0c5d7f847e4469210b57f0ef4cbe, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: guard
-    second: {fileID: 2100000, guid: 5066a502ab630924ab8b1211dde925ae, type: 2}
+      name: Material.002
+    second: {fileID: 2100000, guid: 4261eab6b05cf254a9738b1feca4759d, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: handle
-    second: {fileID: 2100000, guid: 8bf0a45123235f84893a14cedba38c92, type: 2}
+      name: Material.003
+    second: {fileID: 2100000, guid: 5a419c3c188ffb940921b6e063e7adc7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.005
+    second: {fileID: 2100000, guid: 6a33f65280ea0ec49abaf5f382f0701b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

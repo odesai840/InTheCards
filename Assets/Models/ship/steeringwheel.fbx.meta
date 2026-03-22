@@ -1,24 +1,9 @@
 fileFormatVersion: 2
-guid: 693b81de0efaaac4f9d3a57b2c092df6
+guid: a22d2772c897dc0499e4bb39ff1ef5dc
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: blade
-    second: {fileID: 2100000, guid: cd497bbbc465fdf4488c0bc8ebb03b30, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: guard
-    second: {fileID: 2100000, guid: 5066a502ab630924ab8b1211dde925ae, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: handle
-    second: {fileID: 2100000, guid: 8bf0a45123235f84893a14cedba38c92, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0
