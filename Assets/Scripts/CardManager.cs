@@ -26,12 +26,12 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
     void Start()
     {
-
+        player.ShuffleCards();
         for (int i = 0; i < 5; i++)
         {
             FlipNextCard();
         }
-        player.ShuffleCards();
+        
     }
 
     void Update()
@@ -114,7 +114,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
         {
             
             float xOffset = i * currentCardSpacing - totalWidth / 2f;
-            Vector3 targetPos = handCenter.transform.position + new Vector3(xOffset, 0f, 0f);
+            Vector3 targetPos = handCenter.transform.position + Camera.main.transform.right * xOffset;
 
             CardController cc = handCards[i].GetComponent<CardController>();
             if (cc != null)
@@ -173,7 +173,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
         Quaternion startRot = card.transform.rotation;
         Quaternion endRot = startRot * Quaternion.Euler(0f, -90f, 0f); 
 
-        Vector3 endPos = new Vector3(0f, handCenter.transform.position.y, startPos.z + 2);
+        Vector3 endPos = new Vector3(handCenter.transform.position.x + 1.5f, handCenter.transform.position.y, startPos.z);
 
         while (elapsed < duration)
         {

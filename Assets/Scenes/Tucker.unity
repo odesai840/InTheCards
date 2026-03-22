@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   cardPreFab: {fileID: 8707053411220511921, guid: 891a5b7604692084b8d352d65de3a162, type: 3}
-  player: {fileID: 0}
+  player: {fileID: 563021504}
   cardSpawnPoint: {fileID: 185558984}
   handCenter: {fileID: 592245961}
   cardSpacing: 0.5
@@ -566,7 +566,7 @@ MonoBehaviour:
   bloon_regen_interval: 2
   bloon_regen_amount: 1
   max_hand: 5
-  bloons_spawn: {fileID: 0}
+  bloons_spawn: {fileID: 2122977279}
   bloon_prefab: {fileID: 919132149155446097, guid: e692dcecaf5596a43b6102128e8f2914, type: 3}
 --- !u!4 &563021505
 Transform:
@@ -989,6 +989,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &2122977279
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2122977280}
+  m_Layer: 0
+  m_Name: BloonsSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2122977280
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2122977279}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.96, y: 3.76, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1001,3 +1032,4 @@ SceneRoots:
   - {fileID: 563021505}
   - {fileID: 266926511}
   - {fileID: 376769813}
+  - {fileID: 2122977280}
