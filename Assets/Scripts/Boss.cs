@@ -49,7 +49,12 @@ public class Boss : MonoBehaviour
     [SerializeField] private int chip_regen_amount = 1;
 
     private Action[] all_actions;
+    private Action current_action; 
     private ActionType last_action_type = ActionType.NONE;
+
+    [SerializeField] private float action_interval = 3f; 
+    private float action_timer = 0f; 
+    private int last_regen_second = 0; 
     
     [SerializeField] private GameObject poker_chip_prefab;
     private GameObject[] chip_pool;
@@ -65,6 +70,9 @@ public class Boss : MonoBehaviour
 
     void Start()
     {
+        health = max_health;
+        chips = max_chips;
+
         all_actions = new Action[Convert.ToInt32(ActionType.END)];
         all_actions[Convert.ToInt32(ActionType.DMG_PLR)] = new Action(ActionType.DMG_PLR, 1, 5, 100);
         all_actions[Convert.ToInt32(ActionType.DMG_PLR_BIG)] = new Action(ActionType.DMG_PLR_BIG, 4, 15, 60);
@@ -78,12 +86,12 @@ public class Boss : MonoBehaviour
         for (int i = 0; i < 25; i++)
         {
             chip_pool[i] = Instantiate(poker_chip_prefab, chipsSpawnPoint, Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up));
+            chip_pool[i].transform.localScale = Vector3.one * health_chip_scale;
         }
 
         CreateChipStacks();
 
-        //BigBigAttack();
-        BigAttack();
+        current_action = NextAction(); 
     }
 
 
@@ -100,13 +108,14 @@ public class Boss : MonoBehaviour
                 Vector3 pos = chip_pile_locations[j].position + Vector3.up * (k * chip_stack_height) + jitter; // set position
                 health_chip_piles[j][k] = Instantiate(poker_chip_prefab, pos, Quaternion.Euler(90f, Random.Range(0f, 360f), 0f)); // create chip in that position
                 health_chip_piles[j][k].transform.localScale = Vector3.one * health_chip_scale; // scale it to look right
+                
             }
         }
         current_pile = 0;
         chips_in_current_pile = chips_per_pile;
     }
 
-    // Destroy health chips from the top of the current pile, advancing to the next pile when depleted
+    
     private void RemoveHealthChips(int damage)
     {
         int chips_to_remove = damage / 10;
@@ -163,24 +172,36 @@ public class Boss : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-        int second = Mathf.RoundToInt(timer);
+        int second = Mathf.FloorToInt(timer); 
 
-        if (second % chip_regen_interval == 0) Earn(chip_regen_amount);
+        if (second % chip_regen_interval == 0 && second != last_regen_second) 
+        {
+            Earn(chip_regen_amount);
+            last_regen_second = second; 
+        }
+
+        action_timer += Time.deltaTime; 
+        if (action_timer >= action_interval) 
+        {
+            action_timer = 0f; 
+            current_action = ExcutePreamble(current_action); 
+        }
 
         if (Keyboard.current[Key.P].wasPressedThisFrame) Damage(100);
         if (Keyboard.current[Key.O].wasPressedThisFrame) Heal(100);
     }
 
-    // Choose Action
-    public Action Wethepeopleoftheunitedstatesinordertoformamoreperfectunionestablishjusticeinsuredomestictranquilityprovidforthecommondefencepromotethegeneralwelfareadnsecuretheblessingsoflibertytoourselvesandourposteritydoordainandestablishthisconstitutionfortheunitedstatesofamerica
-        (Action action)
+    
+    private Action ExcutePreamble(Action action) 
     {
-        for (int i = 0; i < all_actions.Length; i++)
+        for (int i = 1; i < all_actions.Length; i++) 
         {
             all_actions[i].since_last_use++;
         }
         action.since_last_use = 0;
         
+        Spend(action.cost); 
+
         // perform current action
         switch (action.type)
         {
@@ -189,12 +210,13 @@ public class Boss : MonoBehaviour
             case ActionType.END:
                 break;
             case ActionType.DMG_PLR:
-                PlayDamagePlayerAnim();
-                player.Damage(action.action_value);
+                PlayDamagePlayerAnim(action.action_value); 
                 break;
-            case ActionType.DMG_PLR_BIG: 
+            case ActionType.DMG_PLR_BIG:
+                BigAttack(action.action_value); 
+                break;
             case  ActionType.DMG_PLR_BIG_BIG:
-                player.Damage(action.action_value);
+                BigBigAttack(action.action_value); 
                 break;
             case ActionType.HEAL_BOSS:
                 Heal(action.action_value);
@@ -245,9 +267,9 @@ public class Boss : MonoBehaviour
         return weight;
     }
     
-    private void PlayDamagePlayerAnim()
+    private void PlayDamagePlayerAnim(int damage) // ***
     {
-        StartCoroutine(MoveChipRoutine(0.75f, i => ResetChips()));
+        StartCoroutine(MoveChipRoutine(0.75f, i => { player.Damage(damage); ResetChips(); })); // ***
     }
     
     private IEnumerator MoveChipRoutine(float duration, Action<int> callback)
@@ -324,21 +346,20 @@ public class Boss : MonoBehaviour
     public GameObject fireSpawnPoint;
 
 
-    private void BigBigAttack()
+    private void BigBigAttack(int damage) // ***
     {
         // Instantiate Cannon
         // Point Cannon
         // light fuse
         // fire cannon
-        Quaternion spawnRot = Quaternion.Euler(-90f, 0f, 0f); // spawn the cannon in pointing near but not at player
-        Quaternion endRot = Quaternion.Euler(-90f, 33f, 0f); // direction cannon needs to point to point towards character
+        Quaternion spawnRot = Quaternion.Euler(-90f, 0f, 0f);
+        Quaternion endRot = Quaternion.Euler(-90f, 33f, 0f);
         GameObject cannonGun = Instantiate(cannon, cannonSpawnPoint.transform.position, spawnRot);
 
-
-        StartCoroutine(AimCannon(cannonGun, spawnRot, endRot, 2f)); // 2 equals aim animation duration
+        StartCoroutine(AimCannon(cannonGun, spawnRot, endRot, 2f, damage)); // ***
     }
 
-    IEnumerator AimCannon (GameObject cannonGun, Quaternion spawnRot, Quaternion endRot, float duration)
+    IEnumerator AimCannon (GameObject cannonGun, Quaternion spawnRot, Quaternion endRot, float duration, int damage) // ***
     {
         float elapsed = 0f;
 
@@ -346,23 +367,23 @@ public class Boss : MonoBehaviour
         {
             float t = elapsed / duration;
             cannonGun.transform.rotation = Quaternion.Lerp(spawnRot, endRot, t);
-            elapsed += Time.deltaTime; 
+            elapsed += Time.deltaTime;
             yield return null;
         }
-        
-        StartCoroutine(LightFuse(fuse, cannonGun, 4.0f)); // 4.0 equals fuse light time
+
+        StartCoroutine(LightFuse(fuse, cannonGun, 4.0f, damage)); // ***
     }
 
-    IEnumerator LightFuse (GameObject fusePrefab, GameObject cannonGun, float duration)
+    IEnumerator LightFuse (GameObject fusePrefab, GameObject cannonGun, float duration, int damage) // ***
     {
-        
         Quaternion fuseRot = Quaternion.Euler(-90f, 0f, 0f);
         GameObject fuseObj = Instantiate(fusePrefab, fuseSpawnPoint.transform.position, fuseRot);
         yield return new WaitForSeconds(duration);
         Destroy(fuseObj);
         // FIRE CANNON HERE **********
         GameObject fireObj = Instantiate(explosion, fireSpawnPoint.transform.position, Quaternion.identity); // Creates visual of cannon exploding
-        
+        player.Damage(damage); // *** damage lands when cannon fires
+
         yield return new WaitForSeconds(3f);
         Destroy(cannonGun);
     }
@@ -376,17 +397,16 @@ public class Boss : MonoBehaviour
     public GameObject gunSpawnPoint;
     public GameObject smokeSpawnPoint;
 
-    private void BigAttack()
+    private void BigAttack(int damage) // ***
     {
-        Quaternion spawnRot = Quaternion.Euler(-90f, 0f, 0f); // spawn the cannon in pointing near but not at player
-        Quaternion endRot = Quaternion.Euler(-90f, -20f, 0f); // direction cannon needs to point to point towards character
+        Quaternion spawnRot = Quaternion.Euler(-90f, 0f, 0f);
+        Quaternion endRot = Quaternion.Euler(-90f, -20f, 0f);
         GameObject gunGun = Instantiate(gun, gunSpawnPoint.transform.position, spawnRot);
 
-
-        StartCoroutine(AimGun(gunGun, spawnRot, endRot, .5f)); // 2 equals aim animation duration
+        StartCoroutine(AimGun(gunGun, spawnRot, endRot, .5f, damage)); // ***
     }
 
-    IEnumerator AimGun (GameObject gunGun, Quaternion spawnRot, Quaternion endRot, float duration)
+    IEnumerator AimGun (GameObject gunGun, Quaternion spawnRot, Quaternion endRot, float duration, int damage) // ***
     {
         float elapsed = 0f;
 
@@ -394,24 +414,23 @@ public class Boss : MonoBehaviour
         {
             float t = elapsed / duration;
             gunGun.transform.rotation = Quaternion.Lerp(spawnRot, endRot, t);
-            elapsed += Time.deltaTime; 
+            elapsed += Time.deltaTime;
             yield return null;
         }
-        
-        StartCoroutine(FireGun(smoke, gunGun, 1f)); // 4.0 equals fuse light time
+
+        StartCoroutine(FireGun(smoke, gunGun, 1f, damage)); // ***
     }
 
-    IEnumerator FireGun (GameObject smoke, GameObject gunGun, float duration)
+    IEnumerator FireGun (GameObject smoke, GameObject gunGun, float duration, int damage) // ***
     {
-        
         yield return new WaitForSeconds(duration);
         // FIRE CANNON HERE **********
-        GameObject smokeObj = Instantiate(smoke, smokeSpawnPoint.transform.position, Quaternion.identity); // Creates visual of cannon exploding
+        GameObject smokeObj = Instantiate(smoke, smokeSpawnPoint.transform.position, Quaternion.identity);
         smokeObj.transform.localScale = Vector3.one * 0.5f;
+        player.Damage(damage); // *** damage lands when shot fires
         yield return new WaitForSeconds(.3f);
         Destroy(smokeObj);
-        
-        
+
         yield return new WaitForSeconds(1f);
         Destroy(gunGun);
     }
