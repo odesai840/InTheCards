@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public enum CardType
@@ -78,6 +79,10 @@ public class Player : MonoBehaviour
 
     [SerializeField] private CardManager card_manager;
 
+    [SerializeField] private PlayerHook hook;
+
+    private bool parry = false;
+
     private void Awake()
     {
         all_cards = new Card[Convert.ToInt32(CardType.END)];
@@ -131,12 +136,6 @@ public class Player : MonoBehaviour
                 Manage();
             }
         }
-
-        if (Keyboard.current.fKey.wasPressedThisFrame)
-        {
-            Damage(1);
-            Debug.Log(health);
-        }
     }
 
     public void ChooseCard(Card card)
@@ -148,11 +147,13 @@ public class Player : MonoBehaviour
             case CardType.END:
                 break;
             case CardType.HEAL_PLR:
+                hook.HealRum();
                 Heal(card.action_value);
                 break;
             case CardType.DMG_BOSS:
             case CardType.DMG_BOSS_BIG:
             case CardType.FIREBALL:
+                hook.ThrowRum();
                 //damage formula
                 boss.Damage((card.action_value + dmg_flat) * dmg_mult);
                 //after damage is done, the dmg multiplier is set to 1
@@ -172,6 +173,7 @@ public class Player : MonoBehaviour
             //chris cards
             case CardType.PARRY:
                 //implement boss parry
+                parry = true;
                 break;
             case CardType.DMG_BUFF:
                 //set damage flat buff number to the action value assigned to the number and set the buff duration
@@ -233,12 +235,22 @@ public class Player : MonoBehaviour
 
     public void Damage(int amount)
     {
-        health -= amount;
-        if (endure_active && health <= 0)
+        if (!parry)
+            health -= amount;
+        else
+            parry = false;
+        
+        if (health <= 0)
         {
-            health = 1;
-            endure_active = false;
+            if (endure_active)
+            {
+                health = 1;
+                endure_active = false;
+            }
+            else
+                SceneManager.LoadScene("DeathScene");
         }
+        
         DisplayChips();
     }
 
@@ -289,10 +301,10 @@ public class Player : MonoBehaviour
         {
             if (i < Mathf.CeilToInt(health / 10f))
             {
-                float offsetx = i * -0.015f;
+                float offsetz = i * 0.005f;
                 float offsety = i * 0.05f;                
-                chips_pool[i].transform.position = new Vector3(chips_spawn.transform.position.x + offsetx, chips_spawn.transform.position.y + offsety, chips_spawn.transform.position.z);
-                chips_pool[i].transform.eulerAngles = new Vector3(46, 58, 14);
+                chips_pool[i].transform.position = new Vector3(chips_spawn.transform.position.x, chips_spawn.transform.position.y + offsety, chips_spawn.transform.position.z + offsetz);
+                chips_pool[i].transform.eulerAngles = new Vector3(112, -26, 0);
             }
             else
             {
@@ -308,10 +320,10 @@ public class Player : MonoBehaviour
         {
             if (i < bloons)
             {
-                float offsetx = i * 0.015f;
+                float offsetz = i * -0.005f;
                 float offsety = i * 0.05f;
-                bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x + offsetx, bloons_spawn.transform.position.y + offsety, bloons_spawn.transform.position.z);
-                bloons_pool[i].transform.eulerAngles = new Vector3(46, 302, 14);
+                bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x, bloons_spawn.transform.position.y + offsety, bloons_spawn.transform.position.z + offsetz);
+                bloons_pool[i].transform.eulerAngles = new Vector3(-112, 26, 0);
             }
             else
             {

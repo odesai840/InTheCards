@@ -28,9 +28,6 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
     void Update()
     {
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
-            FlipNextCard();
-
         TrackMouse();
     }
 

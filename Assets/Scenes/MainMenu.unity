@@ -443,8 +443,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Menus
   levelToLoad: Main Scene
-  newGameScene: 
-  mainMenuScene: 
+  newGameScene: Main Scene
+  mainMenuScene: MainMenu
   deathScreen: {fileID: 0}
 --- !u!1 &809407661
 GameObject:
