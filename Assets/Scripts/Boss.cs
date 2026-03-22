@@ -115,9 +115,6 @@ public class Boss : MonoBehaviour
             current_action = ExcutePreamble(current_action); 
         }
 
-        if (Keyboard.current[Key.P].wasPressedThisFrame) Damage(100);
-        if (Keyboard.current[Key.O].wasPressedThisFrame) Heal(100);
-
 
         
     }

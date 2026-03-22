@@ -79,6 +79,8 @@ public class Player : MonoBehaviour
 
     [SerializeField] private CardManager card_manager;
 
+    [SerializeField] private PlayerHook hook;
+
     private bool parry = false;
 
     private void Awake()
@@ -134,12 +136,6 @@ public class Player : MonoBehaviour
                 Manage();
             }
         }
-
-        if (Keyboard.current.fKey.wasPressedThisFrame)
-        {
-            Damage(1);
-            Debug.Log(health);
-        }
     }
 
     public void ChooseCard(Card card)
@@ -151,11 +147,13 @@ public class Player : MonoBehaviour
             case CardType.END:
                 break;
             case CardType.HEAL_PLR:
+                hook.HealRum();
                 Heal(card.action_value);
                 break;
             case CardType.DMG_BOSS:
             case CardType.DMG_BOSS_BIG:
             case CardType.FIREBALL:
+                hook.ThrowRum();
                 //damage formula
                 boss.Damage((card.action_value + dmg_flat) * dmg_mult);
                 //after damage is done, the dmg multiplier is set to 1

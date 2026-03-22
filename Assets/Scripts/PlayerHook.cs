@@ -22,13 +22,6 @@ public class PlayerHook : MonoBehaviour
         hook_start_pos = transform.position;
         hook_start_rot = transform.rotation;
         rum_hook_point = rum.transform.GetChild(0).position;
-        StartCoroutine(waitforstuff());
-    }
-    
-    private IEnumerator waitforstuff()
-    {
-        yield return new WaitForSeconds(2.0f);
-        HealRum();
     }
 
     public void ThrowRum()
