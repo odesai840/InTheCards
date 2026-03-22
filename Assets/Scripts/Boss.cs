@@ -45,7 +45,7 @@ public class Boss : MonoBehaviour
     
     [SerializeField] private int max_chips = 10;
     private int chips;
-    [SerializeField] private int chip_regen_interval = 3;
+    [SerializeField] private int chip_regen_interval = 2;
     [SerializeField] private int chip_regen_amount = 1;
 
     private Action[] all_actions;
@@ -76,7 +76,7 @@ public class Boss : MonoBehaviour
         all_actions = new Action[Convert.ToInt32(ActionType.END)];
         all_actions[Convert.ToInt32(ActionType.DMG_PLR)] = new Action(ActionType.DMG_PLR, 1, 5, 100);
         all_actions[Convert.ToInt32(ActionType.DMG_PLR_BIG)] = new Action(ActionType.DMG_PLR_BIG, 4, 15, 60);
-        all_actions[Convert.ToInt32(ActionType.DMG_PLR_BIG_BIG)] = new Action(ActionType.DMG_PLR_BIG_BIG, 10, 50, 10);
+        all_actions[Convert.ToInt32(ActionType.DMG_PLR_BIG_BIG)] = new Action(ActionType.DMG_PLR_BIG_BIG, 6, 50, 10);
         all_actions[Convert.ToInt32(ActionType.HEAL_BOSS)] = new Action(ActionType.HEAL_BOSS, 1, 10, 100);
         all_actions[Convert.ToInt32(ActionType.SHUF_PLR)] = new Action(ActionType.SHUF_PLR, 8, 0, 20);
 
@@ -92,6 +92,34 @@ public class Boss : MonoBehaviour
         CreateChipStacks();
 
         current_action = NextAction(); 
+    }
+
+    void Update()
+    {
+        timer += Time.deltaTime;
+        int second = Mathf.FloorToInt(timer); 
+
+
+        if (second % chip_regen_interval == 0 && second != last_regen_second) 
+        {
+            Earn(chip_regen_amount);
+            last_regen_second = second; 
+        }
+
+        
+
+        action_timer += Time.deltaTime; 
+        if (action_timer >= action_interval) 
+        {
+            action_timer = 0f; 
+            current_action = ExcutePreamble(current_action); 
+        }
+
+        if (Keyboard.current[Key.P].wasPressedThisFrame) Damage(100);
+        if (Keyboard.current[Key.O].wasPressedThisFrame) Heal(100);
+
+
+        
     }
 
 
@@ -169,27 +197,7 @@ public class Boss : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        timer += Time.deltaTime;
-        int second = Mathf.FloorToInt(timer); 
-
-        if (second % chip_regen_interval == 0 && second != last_regen_second) 
-        {
-            Earn(chip_regen_amount);
-            last_regen_second = second; 
-        }
-
-        action_timer += Time.deltaTime; 
-        if (action_timer >= action_interval) 
-        {
-            action_timer = 0f; 
-            current_action = ExcutePreamble(current_action); 
-        }
-
-        if (Keyboard.current[Key.P].wasPressedThisFrame) Damage(100);
-        if (Keyboard.current[Key.O].wasPressedThisFrame) Heal(100);
-    }
+    
 
     
     private Action ExcutePreamble(Action action) 
@@ -222,7 +230,7 @@ public class Boss : MonoBehaviour
                 Heal(action.action_value);
                 break;
             case ActionType.SHUF_PLR:
-                player.ShuffleCards();
+                player.ShuffleCards(true);
                 break;
         }
         
@@ -269,33 +277,34 @@ public class Boss : MonoBehaviour
     
     private void PlayDamagePlayerAnim(int damage) // ***
     {
-        StartCoroutine(MoveChipRoutine(0.75f, i => { player.Damage(damage); ResetChips(); })); // ***
+        StartCoroutine(MoveChipRoutine(0.75f, damage)); // ***
     }
-    
-    private IEnumerator MoveChipRoutine(float duration, Action<int> callback)
+
+    private IEnumerator MoveChipRoutine(float duration, int damage)
     {
         float elapsed_time = 0.0f;
         Vector3[] target_points = new Vector3[chip_pool.Length];
-        
+
         for(int i = 0; i < chip_pool.Length; i++){
             Vector2 point = Random.insideUnitCircle * 0.75f;
             target_points[i] = new Vector3(0.0f, point.y, point.x);
             target_points[i] += player.transform.position;
         }
-        
+
         while (elapsed_time < duration)
         {
             for(int i = 0; i < chip_pool.Length; i++){
                 chip_pool[i].transform.position = Vector3.Lerp(chip_pool[i].transform.position, target_points[i], 5.0f * Time.deltaTime);
                 chip_pool[i].transform.RotateAround(chip_pool[i].transform.position, Vector3.up, 5.0f);
             }
-            
+
             elapsed_time += Time.deltaTime;
-            
+
             yield return null;
         }
-        
-        callback(1);
+
+        player.Damage(damage); // *** damage lands when chips reach player
+        ResetChips();
     }
     
     private void ResetChips()
