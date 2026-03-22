@@ -65,6 +65,8 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
             Vector3 cardPos = hoveredCard.transform.position;
             hoveredCard = null;
             StartCoroutine(PlayCard(cardObj, cardPos, .4f));
+            FlipNextCard();
+            RepositionAllCards();
         }
     }
 
@@ -77,8 +79,9 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
         if (hoveredCard != null) player.ChooseCard(hoveredCard.card);
         Card newCard = player.NextCard();
         newCardObject.GetComponent<CardController>().card = newCard;
+        newCardObject.GetComponent<Renderer>().material.mainTexture = newCard.texture;
 
-        UnityEngine.Debug.Log("Card Type");
+        UnityEngine.Debug.Log(newCard.type);
 
         handCards.Add(newCardObject);
         RepositionAllCards();

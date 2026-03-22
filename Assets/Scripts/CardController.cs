@@ -16,7 +16,6 @@ public class CardController : MonoBehaviour   ///// Controls what the physical c
 
     public Card card;
 
-
     void Start()
     {
         CameraReferencePoint = GameObject.Find("CameraReferencePoint");
