@@ -53,7 +53,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
         if (hoveredCard != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (!hoveredCard.used)
+            if (!hoveredCard.used && player.CanAffordCard(hoveredCard.card))
             {
                 hoveredCard.used = true;
                 Debug.Log(hoveredCard.card.type);

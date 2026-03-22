@@ -81,7 +81,7 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         all_cards = new Card[Convert.ToInt32(CardType.END)];
-        all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 100, Resources.Load<Texture2D>("Cards/c1"));
+        all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 30, Resources.Load<Texture2D>("Cards/c1"));
         all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 10, 100, Resources.Load<Texture2D>("Cards/c2"));
         all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 7, 33, 70, Resources.Load<Texture2D>("Cards/c3"));
         all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 30, Resources.Load<Texture2D>("Cards/c4"));
@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
         all_cards[Convert.ToInt32(CardType.DMG_BUFF)] = new Card(CardType.DMG_BUFF, 4, 8, 60, Resources.Load<Texture2D>("Cards/c7"));
         all_cards[Convert.ToInt32(CardType.DOUBLE_DMG)] = new Card(CardType.DOUBLE_DMG, 4, 2, 50, Resources.Load<Texture2D>("Cards/c8"));
         all_cards[Convert.ToInt32(CardType.ENDURE)] = new Card(CardType.ENDURE, 3, 1, 30, Resources.Load<Texture2D>("Cards/c9"));
-        all_cards[Convert.ToInt32(CardType.FIREBALL)] = new Card(CardType.FIREBALL, 10, 142, 10, Resources.Load<Texture2D>("Cards/c10"));
+        all_cards[Convert.ToInt32(CardType.FIREBALL)] = new Card(CardType.FIREBALL, 10, 150, 10, Resources.Load<Texture2D>("Cards/c10"));
         
         ShuffleCards();
     }
@@ -221,7 +221,10 @@ public class Player : MonoBehaviour
         card_manager.GetHandCards().Clear();
 
         foreach (GameObject card in snapshot)
+        {
+            card.GetComponent<CardController>().used = true;
             StartCoroutine(card_manager.PlayCard(card, card.transform.position, .4f));
+        }
 
         int count = initial ? max_hand : max_hand - 1;
         for (int i = 0; i < count; i++)
@@ -271,6 +274,12 @@ public class Player : MonoBehaviour
     public Card GetFirstCard()
     {
         return all_cards[1];
+    }
+
+    public bool CanAffordCard(Card card)
+    {
+        if (card.cost <= bloons) return true;
+        return false;
     }
 
     private void DisplayChips() // display health
