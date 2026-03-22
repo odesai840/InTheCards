@@ -14,6 +14,8 @@ public class CardController : MonoBehaviour   ///// Controls what the physical c
     public float moveSpeed = 5f;
     public float hoverHeight = 0.3f;
 
+    public Card card;
+
 
     void Start()
     {
@@ -66,21 +68,5 @@ public class CardController : MonoBehaviour   ///// Controls what the physical c
 
     private CardController hoveredCard;
 
-    private void TrackMouse()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        CardController card = null;
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
-            card = hit.collider.GetComponent<CardController>();
-
-        if (card != hoveredCard)
-        {
-            hoveredCard?.Unhover();
-            hoveredCard = card;
-            hoveredCard?.Hover();
-        }
-
-        
-    }
+    
 }

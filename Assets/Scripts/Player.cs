@@ -5,11 +5,18 @@ using Random = UnityEngine.Random;
 public enum CardType
 {
     NONE = 0,
-    HEAL_PLR,
-    DMG_BOSS,
-    DMG_BOSS_BIG,
-    SHUF,
-    GIVE_BLOONS,
+    HEAL_PLR, // drink rum
+    DMG_BOSS, // 
+    DMG_BOSS_BIG, // 
+    SHUF, // 
+    GIVE_BLOONS, // 
+
+    //chris cards
+    PARRY, // Parry
+    DMG_BUFF, // 
+    DOUBLE_DMG, // 
+    ENDURE, // Endure
+    FIREBALL, // Fireball
     END
 }
 
@@ -49,6 +56,14 @@ public class Player : MonoBehaviour
     private Card[] all_cards;
     private CardType last_received_card_type;
 
+    //values for damage calculation
+    private int dmg_mult = 0;
+    private int dmg_flat = 0;
+    private int dmg_flat_duration = 0;
+
+    //boolean to check endure status
+    private bool endure_active = false;
+
     void Start()
     {
         health = max_health;
@@ -56,9 +71,16 @@ public class Player : MonoBehaviour
         all_cards = new Card[Convert.ToInt32(CardType.END)];
         all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 100);
         all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 5, 100);
-        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 3, 30, 100);
-        all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 100);
-        all_cards[Convert.ToInt32(CardType.GIVE_BLOONS)] = new Card(CardType.GIVE_BLOONS, 2, 5, 100);
+        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 3, 30, 70);
+        all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 30);
+        all_cards[Convert.ToInt32(CardType.GIVE_BLOONS)] = new Card(CardType.GIVE_BLOONS, 2, 5, 30);
+
+        //chris cards
+        all_cards[Convert.ToInt32(CardType.PARRY)] = new Card(CardType.PARRY, 5, 0, 30);
+        all_cards[Convert.ToInt32(CardType.DMG_BUFF)] = new Card(CardType.DMG_BUFF, 4, 4, 60);
+        all_cards[Convert.ToInt32(CardType.DOUBLE_DMG)] = new Card(CardType.DOUBLE_DMG, 4, 2, 50);
+        all_cards[Convert.ToInt32(CardType.ENDURE)] = new Card(CardType.ENDURE, 3, 1, 30);
+        all_cards[Convert.ToInt32(CardType.FIREBALL)] = new Card(CardType.FIREBALL, 10, 50, 10);
         
         ShuffleCards();
     }
@@ -71,7 +93,7 @@ public class Player : MonoBehaviour
         if (second % bloon_regen_interval == 0) Earn(bloon_regen_amount);
     }
 
-    public Card ChooseCard(Card card)
+    public void ChooseCard(Card card)
     {
         switch (card.type)
         {
@@ -84,7 +106,16 @@ public class Player : MonoBehaviour
                 break;
             case CardType.DMG_BOSS:
             case CardType.DMG_BOSS_BIG:
-                boss.Damage(card.action_value);
+            case CardType.FIREBALL:
+                //damage formula
+                boss.Damage((card.action_value + dmg_flat) * dmg_mult);
+                //after damage is done, the dmg multiplier is set to 0
+                dmg_mult = 0;
+                //however if damage flat buff is in play, 
+                //use a counter to count down the duration of the buff based on the number of times damage has been done
+                dmg_flat_duration--;
+                if (dmg_flat_duration == 0)
+                    dmg_flat = 0; //remove the flat dmg buff
                 break;
             case CardType.SHUF:
                 ShuffleCards();
@@ -92,17 +123,27 @@ public class Player : MonoBehaviour
             case CardType.GIVE_BLOONS:
                 Earn(card.action_value);
                 break;
+            //chris cards
+            case CardType.PARRY:
+                //implement boss parry
+                break;
+            case CardType.DMG_BUFF:
+                //set damage flat buff number to the action value assigned to the number and set the buff duration
+                dmg_flat = card.action_value;
+                dmg_flat_duration = 3;
+                break;
+            case CardType.DOUBLE_DMG:
+                dmg_mult = card.action_value;
+                break;
+            case CardType.ENDURE:
+                endure_active = true;
+                break;
         }
         Spend(card.cost);
-
-        Card random_card = NextCard();
-        last_received_card_type = random_card.type;
-        
         Manage();
-        return random_card;
     }
     
-    private Card NextCard()
+    public Card NextCard()
     {
         int total = 0;
         for (int i = 1; i < all_cards.Length; i++)
@@ -117,8 +158,11 @@ public class Player : MonoBehaviour
         {
             if (all_cards[i] == null || all_cards[i].type == CardType.NONE || all_cards[i].type == CardType.END) continue;
             cumulative += all_cards[i].frequency;
+            last_received_card_type = all_cards[i].type;
             if (roll < cumulative) return all_cards[i];
         }
+
+        last_received_card_type = all_cards[1].type;
         return all_cards[1];
     }
 
@@ -136,6 +180,11 @@ public class Player : MonoBehaviour
     public void Damage(int amount)
     {
         health -= amount;
+        if (endure_active && health <= 0)
+        {
+            health = 1;
+            endure_active = false;
+        }
     }
     public void Heal(int amount)
     {

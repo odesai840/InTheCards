@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 
@@ -12,6 +13,8 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 {
 
     public GameObject cardPreFab;
+
+    [SerializeField] private Player player;
 
     [SerializeField] GameObject cardSpawnPoint;  // where cards fly in from
     [SerializeField] GameObject handCenter;      //Center of hands in card
@@ -28,6 +31,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
         {
             FlipNextCard();
         }
+        player.ShuffleCards();
     }
 
     void Update()
@@ -68,15 +72,21 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
     private void FlipNextCard()
     {
         Quaternion spawnRot = Quaternion.Euler(0f, 0f, 90f);
-        GameObject newCard = Instantiate(cardPreFab, transform.position, spawnRot);
+        GameObject newCardObject = Instantiate(cardPreFab, transform.position, spawnRot);
 
-        handCards.Add(newCard);
+        if (hoveredCard != null) player.ChooseCard(hoveredCard.card);
+        Card newCard = player.NextCard();
+        newCardObject.GetComponent<CardController>().card = newCard;
+
+        UnityEngine.Debug.Log("Card Type");
+
+        handCards.Add(newCardObject);
         RepositionAllCards();
 
         Vector3 startPos = transform.position;
         Vector3 endPos = handCenter.transform.position;
 
-        StartCoroutine(MoveCard(newCard, startPos, endPos, .5f));
+        StartCoroutine(MoveCard(newCardObject, startPos, endPos, .5f));
     }
 
 
