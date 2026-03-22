@@ -528,9 +528,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   boss: {fileID: 266926510}
-  max_health: 20
+  max_health: 100
   max_bloons: 10
-  bloon_regen_interval: 2
+  bloon_regen_interval: 1
   bloon_regen_amount: 1
   max_hand: 5
   bloons_spawn: {fileID: 685246056}
@@ -925,63 +925,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!1001 &1999164907
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1228913794565059328, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_Name
-      value: doubloon
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1.0263085
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 4.6919327
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -8.505583
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7775873
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.28589308
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0.48123753
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0.28641522
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 46.078
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: -57.438
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893247119034214842, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 14.208
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 86fd91200cda6be4ab66a72833c0ad67, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -993,5 +936,4 @@ SceneRoots:
   - {fileID: 1856061958}
   - {fileID: 563021505}
   - {fileID: 266926511}
-  - {fileID: 1999164907}
   - {fileID: 685246057}

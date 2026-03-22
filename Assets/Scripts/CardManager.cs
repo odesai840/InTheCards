@@ -3,10 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-
-
-
-
+using Debug = UnityEngine.Debug;
 
 
 public class CardManager : MonoBehaviour   //// Controls the spawning and use of the cards
@@ -22,7 +19,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
     public float cardSpacing = 1.5f;
 
     private readonly List<GameObject> handCards = new List<GameObject>();
-
+    public List<GameObject> GetHandCards() { return handCards; }
 
     void Start()
     {
@@ -42,7 +39,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
         TrackMouse();
     }
 
-    private CardController hoveredCard;
+    private CardController hoveredCard = null;
 
     private void TrackMouse()
     {
@@ -61,24 +58,29 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
 
         if (hoveredCard != null && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            GameObject cardObj = hoveredCard.gameObject;
-            Vector3 cardPos = hoveredCard.transform.position;
-            hoveredCard = null;
-            StartCoroutine(PlayCard(cardObj, cardPos, .4f));
-            FlipNextCard();
-            RepositionAllCards();
+            if (!hoveredCard.used)
+            {
+                hoveredCard.used = true;
+                player.ChooseCard(hoveredCard.card);
+                GameObject cardObj = hoveredCard.gameObject;
+                Vector3 cardPos = hoveredCard.transform.position;
+                hoveredCard = null;
+                StartCoroutine(PlayCard(cardObj, cardPos, .4f));
+                FlipNextCard();
+                RepositionAllCards();
+            }
         }
     }
 
 
-    private void FlipNextCard()
+    public void FlipNextCard()
     {
         Quaternion spawnRot = Quaternion.Euler(0f, 0f, 90f);
         GameObject newCardObject = Instantiate(cardPreFab, transform.position, spawnRot);
 
-        if (hoveredCard != null) player.ChooseCard(hoveredCard.card);
         Card newCard = player.NextCard();
         newCardObject.GetComponent<CardController>().card = newCard;
+        newCardObject.GetComponent<CardController>().used = false;
         newCardObject.GetComponent<Renderer>().material.mainTexture = newCard.texture;
 
         UnityEngine.Debug.Log(newCard.type);
@@ -93,7 +95,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
     }
 
 
-    private void RepositionAllCards()
+    public void RepositionAllCards()
     {
 
         float currentCardSpacing = cardSpacing;
@@ -167,7 +169,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
     }
 
 
-    IEnumerator PlayCard(GameObject card, Vector3 startPos, float duration)
+    public IEnumerator PlayCard(GameObject card, Vector3 startPos, float duration)
     {
         float elapsed = 0f;
         Quaternion startRot = card.transform.rotation;

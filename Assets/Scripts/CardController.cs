@@ -13,7 +13,7 @@ public class CardController : MonoBehaviour   ///// Controls what the physical c
     public bool isInHand = false;
     public float moveSpeed = 5f;
     public float hoverHeight = 0.3f;
-
+    public bool used = false;
     public Card card;
 
     void Start()

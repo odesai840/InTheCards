@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -50,7 +51,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private int max_bloons = 10;
     private int bloons;
-    [SerializeField] private int bloon_regen_interval = 3;
+    [SerializeField] private int bloon_regen_interval = 1;
     [SerializeField] private int bloon_regen_amount = 1;
 
     [SerializeField] private int max_hand = 5;
@@ -69,6 +70,8 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject bloons_spawn;
     [SerializeField] private GameObject bloon_prefab;
     private GameObject[] bloons_pool;
+    
+    [SerializeField] private CardManager card_manager;
 
     private void Awake()
     {
@@ -103,10 +106,17 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        timer += Time.deltaTime;
-        int second = Mathf.RoundToInt(timer);
+        if (bloons < max_bloons)
+        {
+            timer += Time.deltaTime;
 
-        if (second % bloon_regen_interval == 0 && bloons < max_bloons) Earn(bloon_regen_amount);
+            if (timer > bloon_regen_interval)
+            {
+                timer = 0.0f;
+                Earn(bloon_regen_amount);
+                Manage();
+            }
+        }
     }
 
     public void ChooseCard(Card card)
@@ -155,6 +165,7 @@ public class Player : MonoBehaviour
                 endure_active = true;
                 break;
         }
+
         Spend(card.cost);
         Manage();
     }
@@ -184,13 +195,17 @@ public class Player : MonoBehaviour
 
     public void ShuffleCards()
     {
-        Card[] random_hand =  new Card[max_hand];
+        List<GameObject> hand_cards = card_manager.GetHandCards();
+        for (int i = 0; i < hand_cards.Count; i++)
+        {
+            StartCoroutine(card_manager.PlayCard(hand_cards[i], hand_cards[i].transform.position, .4f));
+        }
+        
         for (int i = 0; i < max_hand; i++)
         {
-            random_hand[i] = NextCard();
-            last_received_card_type = random_hand[i].type;
+            card_manager.FlipNextCard();
+            card_manager.RepositionAllCards();
         }
-        hand = random_hand;
     }
     
     public void Damage(int amount)
@@ -202,25 +217,19 @@ public class Player : MonoBehaviour
             endure_active = false;
         }
     }
-    public void Heal(int amount)
+    private void Heal(int amount)
     {
         health += amount;
     }
-    public void Spend(int amount)
+    private void Spend(int amount)
     {
         bloons -=  amount;
+        DisplayBloons();
     }
-    public void Earn(int amount)
+    private void Earn(int amount)
     {
         bloons += amount;
-
-        for (int i = 0; i < bloons; i++)
-        {
-            float offsetx = i * 0.015f;
-            float offsety = i * 0.05f;
-            bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x + offsetx, bloons_spawn.transform.position.y + offsety, bloons_spawn.transform.position.z);
-            bloons_pool[i].transform.eulerAngles = new Vector3(46, 302, 14);
-        }
+        DisplayBloons();
     }
 
     private void Manage()
@@ -232,5 +241,29 @@ public class Player : MonoBehaviour
     public Card[] GetHand()
     {
         return hand; 
+    }
+
+    public Card GetFirstCard()
+    {
+        return all_cards[1];
+    }
+
+    private void DisplayBloons()
+    {
+        Manage();
+        for (int i = 0; i < max_bloons; i++)
+        {
+            if (i < bloons)
+            {
+                float offsetx = i * 0.015f;
+                float offsety = i * 0.05f;
+                bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x + offsetx, bloons_spawn.transform.position.y + offsety, bloons_spawn.transform.position.z);
+                bloons_pool[i].transform.eulerAngles = new Vector3(46, 302, 14);
+            }
+            else
+            {
+                bloons_pool[i].transform.position = new Vector3(0.0f, -1000.0f, 0.0f);
+            }
+        }
     }
 }
