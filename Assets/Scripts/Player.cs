@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public enum CardType
@@ -234,11 +235,17 @@ public class Player : MonoBehaviour
     public void Damage(int amount)
     {
         health -= amount;
-        if (endure_active && health <= 0)
+        if (health <= 0)
         {
-            health = 1;
-            endure_active = false;
+            if (endure_active)
+            {
+                health = 1;
+                endure_active = false;
+            }
+            else
+                SceneManager.LoadScene("DeathScene");
         }
+        
         DisplayChips();
     }
 
@@ -289,10 +296,10 @@ public class Player : MonoBehaviour
         {
             if (i < Mathf.CeilToInt(health / 10f))
             {
-                float offsetx = i * -0.015f;
+                float offsetz = i * 0.005f;
                 float offsety = i * 0.05f;                
-                chips_pool[i].transform.position = new Vector3(chips_spawn.transform.position.x + offsetx, chips_spawn.transform.position.y + offsety, chips_spawn.transform.position.z);
-                chips_pool[i].transform.eulerAngles = new Vector3(46, 58, 14);
+                chips_pool[i].transform.position = new Vector3(chips_spawn.transform.position.x, chips_spawn.transform.position.y + offsety, chips_spawn.transform.position.z + offsetz);
+                chips_pool[i].transform.eulerAngles = new Vector3(112, -26, 0);
             }
             else
             {
@@ -308,10 +315,10 @@ public class Player : MonoBehaviour
         {
             if (i < bloons)
             {
-                float offsetx = i * 0.015f;
+                float offsetz = i * -0.005f;
                 float offsety = i * 0.05f;
-                bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x + offsetx, bloons_spawn.transform.position.y + offsety, bloons_spawn.transform.position.z);
-                bloons_pool[i].transform.eulerAngles = new Vector3(46, 302, 14);
+                bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x, bloons_spawn.transform.position.y + offsety, bloons_spawn.transform.position.z + offsetz);
+                bloons_pool[i].transform.eulerAngles = new Vector3(-112, 26, 0);
             }
             else
             {
