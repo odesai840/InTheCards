@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -62,9 +63,11 @@ public class Boss : MonoBehaviour
         all_actions[Convert.ToInt32(ActionType.SHUF_PLR)] = new Action(ActionType.SHUF_PLR, 8, 0, 20);
         
         chip_pool = new GameObject[25];
+        
+        Vector3 chipsSpawnPoint = new Vector3(-1, -10, 0);
         for(int i = 0; i < 25; i++)
         {
-            chip_pool[i] = Instantiate(poker_chip_prefab, transform.position,  Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up));
+            chip_pool[i] = Instantiate(poker_chip_prefab, chipsSpawnPoint,  Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up));
         }
 
         BigBigAttack();
@@ -237,8 +240,8 @@ public class Boss : MonoBehaviour
         // Point Cannon
         // light fuse
         // fire cannon
-        Quaternion spawnRot = Quaternion.Euler(-90f, -90f, 0f); // spawn the cannon in pointing near but not at player
-        Quaternion endRot = Quaternion.Euler(-90f, -80f, 0f); // direction cannon needs to point to point towards character
+        Quaternion spawnRot = Quaternion.Euler(-90f, 0f, 0f); // spawn the cannon in pointing near but not at player
+        Quaternion endRot = Quaternion.Euler(-90f, 33f, 0f); // direction cannon needs to point to point towards character
         GameObject cannonGun = Instantiate(cannon, cannonSpawnPoint.transform.position, spawnRot);
 
         UnityEngine.Debug.Log("Creating Cannon");
@@ -257,18 +260,21 @@ public class Boss : MonoBehaviour
             elapsed += Time.deltaTime; 
             yield return null;
         }
-        UnityEngine.Debug.Log("Aim Cannon");
-        StartCoroutine(LightFuse(fuse, 4.0f)); // 4.0 equals fuse light time
+        
+        StartCoroutine(LightFuse(fuse, cannonGun, 4.0f)); // 4.0 equals fuse light time
     }
 
-    IEnumerator LightFuse (GameObject fusePrefab, float duration)
+    IEnumerator LightFuse (GameObject fusePrefab, GameObject cannonGun, float duration)
     {
-        UnityEngine.Debug.Log("Light Fuse");
-        GameObject fuseObj = Instantiate(fusePrefab, fuseSpawnPoint.transform.position, Quaternion.identity);
+        
+        Quaternion fuseRot = Quaternion.Euler(-90f, 0f, 0f);
+        GameObject fuseObj = Instantiate(fusePrefab, fuseSpawnPoint.transform.position, fuseRot);
         yield return new WaitForSeconds(duration);
         Destroy(fuseObj);
         // FIRE CANNON HERE **********
         GameObject fireObj = Instantiate(explosion, fireSpawnPoint.transform.position, Quaternion.identity); // Creates visual of cannon exploding
-        UnityEngine.Debug.Log("Destroy Fuse");
+        
+        yield return new WaitForSeconds(3f);
+        Destroy(cannonGun);
     }
 }
