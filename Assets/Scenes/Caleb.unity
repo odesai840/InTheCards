@@ -25,7 +25,7 @@ RenderSettings:
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 0
-  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+  m_SubtractiveShadowColor: {r: 0.48235294, g: 0.54604805, b: 0.5529412, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
@@ -418,6 +418,11 @@ MonoBehaviour:
   bloon_regen_interval: 2
   bloon_regen_amount: 1
   max_hand: 5
+  bloons_spawn: {fileID: 0}
+  bloon_prefab: {fileID: 0}
+  chips_spawn: {fileID: 0}
+  chip_prefab: {fileID: 0}
+  card_manager: {fileID: 0}
 --- !u!4 &1190372199
 Transform:
   m_ObjectHideFlags: 0
@@ -482,6 +487,21 @@ MonoBehaviour:
   max_chips: 10
   chip_regen_interval: 3
   chip_regen_amount: 1
+  poker_chip_prefab: {fileID: 0}
+  chip_pile_locations: []
+  chip_stack_height: 0.05
+  chip_stack_jitter: 0.02
+  health_chip_scale: 1
+  cannon: {fileID: 0}
+  fuse: {fileID: 0}
+  explosion: {fileID: 0}
+  cannonSpawnPoint: {fileID: 0}
+  fuseSpawnPoint: {fileID: 0}
+  fireSpawnPoint: {fileID: 0}
+  gun: {fileID: 0}
+  smoke: {fileID: 0}
+  gunSpawnPoint: {fileID: 0}
+  smokeSpawnPoint: {fileID: 0}
 --- !u!1001 &1929093681
 PrefabInstance:
   m_ObjectHideFlags: 0
