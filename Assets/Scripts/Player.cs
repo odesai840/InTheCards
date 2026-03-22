@@ -216,9 +216,10 @@ public class Player : MonoBehaviour
 
         for (int i = 0; i < bloons; i++)
         {
-            float offset = i * 0.05f;
-            bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x + offset, bloons_spawn.transform.position.y + offset, bloons_spawn.transform.position.z);
-            bloons_pool[i].transform.eulerAngles = new Vector3(107, 41, 0);
+            float offsetx = i * 0.015f;
+            float offsety = i * 0.05f;
+            bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x + offsetx, bloons_spawn.transform.position.y + offsety, bloons_spawn.transform.position.z);
+            bloons_pool[i].transform.eulerAngles = new Vector3(46, 302, 14);
         }
     }
 
@@ -226,11 +227,6 @@ public class Player : MonoBehaviour
     {
         health = Mathf.Clamp(health, 0, max_health);
         bloons = Mathf.Clamp(bloons, 0, max_bloons);
-    }
-
-    private void DisplayBloons()
-    {
-        
     }
 
     public Card[] GetHand()
