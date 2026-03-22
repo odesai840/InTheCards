@@ -83,7 +83,7 @@ public class Player : MonoBehaviour
         all_cards = new Card[Convert.ToInt32(CardType.END)];
         all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 30, Resources.Load<Texture2D>("Cards/C1"));
         all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 10, 100, Resources.Load<Texture2D>("Cards/C2"));
-        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 7, 33, 70, Resources.Load<Texture2D>("Cards/C3"));
+        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 7, 30, 70, Resources.Load<Texture2D>("Cards/C3"));
         all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 30, Resources.Load<Texture2D>("Cards/C4"));
         all_cards[Convert.ToInt32(CardType.GIVE_BLOONS)] = new Card(CardType.GIVE_BLOONS, 2, 5, 30, Resources.Load<Texture2D>("Cards/C5"));
 
