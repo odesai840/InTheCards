@@ -81,18 +81,18 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         all_cards = new Card[Convert.ToInt32(CardType.END)];
-        all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 30, Resources.Load<Texture2D>("Cards/c1"));
-        all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 10, 100, Resources.Load<Texture2D>("Cards/c2"));
-        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 7, 33, 70, Resources.Load<Texture2D>("Cards/c3"));
-        all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 30, Resources.Load<Texture2D>("Cards/c4"));
-        all_cards[Convert.ToInt32(CardType.GIVE_BLOONS)] = new Card(CardType.GIVE_BLOONS, 2, 5, 30, Resources.Load<Texture2D>("Cards/c5"));
+        all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 30, Resources.Load<Texture2D>("Cards/C1"));
+        all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 10, 100, Resources.Load<Texture2D>("Cards/C2"));
+        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 7, 33, 70, Resources.Load<Texture2D>("Cards/C3"));
+        all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 30, Resources.Load<Texture2D>("Cards/C4"));
+        all_cards[Convert.ToInt32(CardType.GIVE_BLOONS)] = new Card(CardType.GIVE_BLOONS, 2, 5, 30, Resources.Load<Texture2D>("Cards/C5"));
 
         //chris cards
-        all_cards[Convert.ToInt32(CardType.PARRY)] = new Card(CardType.PARRY, 5, 0, 30, Resources.Load<Texture2D>("Cards/c6"));
-        all_cards[Convert.ToInt32(CardType.DMG_BUFF)] = new Card(CardType.DMG_BUFF, 4, 8, 60, Resources.Load<Texture2D>("Cards/c7"));
-        all_cards[Convert.ToInt32(CardType.DOUBLE_DMG)] = new Card(CardType.DOUBLE_DMG, 4, 2, 50, Resources.Load<Texture2D>("Cards/c8"));
-        all_cards[Convert.ToInt32(CardType.ENDURE)] = new Card(CardType.ENDURE, 3, 1, 30, Resources.Load<Texture2D>("Cards/c9"));
-        all_cards[Convert.ToInt32(CardType.FIREBALL)] = new Card(CardType.FIREBALL, 10, 150, 10, Resources.Load<Texture2D>("Cards/c10"));
+        all_cards[Convert.ToInt32(CardType.PARRY)] = new Card(CardType.PARRY, 5, 0, 30, Resources.Load<Texture2D>("Cards/C6"));
+        all_cards[Convert.ToInt32(CardType.DMG_BUFF)] = new Card(CardType.DMG_BUFF, 4, 8, 60, Resources.Load<Texture2D>("Cards/C7"));
+        all_cards[Convert.ToInt32(CardType.DOUBLE_DMG)] = new Card(CardType.DOUBLE_DMG, 4, 2, 50, Resources.Load<Texture2D>("Cards/C8"));
+        all_cards[Convert.ToInt32(CardType.ENDURE)] = new Card(CardType.ENDURE, 3, 1, 30, Resources.Load<Texture2D>("Cards/C9"));
+        all_cards[Convert.ToInt32(CardType.FIREBALL)] = new Card(CardType.FIREBALL, 10, 150, 10, Resources.Load<Texture2D>("Cards/C10"));
         
         ShuffleCards();
     }
