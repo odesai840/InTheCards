@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 
@@ -69,6 +70,8 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
     {
         Quaternion spawnRot = Quaternion.Euler(0f, 0f, 90f);
         GameObject newCard = Instantiate(cardPreFab, transform.position, spawnRot);
+
+        Debug.Log("Card Type");
 
         handCards.Add(newCard);
         RepositionAllCards();
