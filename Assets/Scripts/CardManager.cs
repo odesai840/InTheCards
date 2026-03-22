@@ -31,6 +31,7 @@ public class CardManager : MonoBehaviour   //// Controls the spawning and use of
         {
             FlipNextCard();
         }
+        player.ShuffleCards();
     }
 
     void Update()

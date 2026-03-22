@@ -5,18 +5,18 @@ using Random = UnityEngine.Random;
 public enum CardType
 {
     NONE = 0,
-    HEAL_PLR,
-    DMG_BOSS,
-    DMG_BOSS_BIG,
-    SHUF,
-    GIVE_BLOONS,
+    HEAL_PLR, // drink rum
+    DMG_BOSS, // 
+    DMG_BOSS_BIG, // 
+    SHUF, // 
+    GIVE_BLOONS, // 
 
     //chris cards
-    PARRY,
-    DMG_BUFF,
-    DOUBLE_DMG,
-    ENDURE,
-    FIREBALL,
+    PARRY, // Parry
+    DMG_BUFF, // 
+    DOUBLE_DMG, // 
+    ENDURE, // Endure
+    FIREBALL, // Fireball
     END
 }
 
@@ -57,12 +57,12 @@ public class Player : MonoBehaviour
     private CardType last_received_card_type;
 
     //values for damage calculation
-    private float dmg_mult = 0.0f;
+    private int dmg_mult = 0;
     private int dmg_flat = 0;
     private int dmg_flat_duration = 0;
 
     //boolean to check endure status
-    private boolean endure_active = false;
+    private bool endure_active = false;
 
     void Start()
     {
@@ -93,7 +93,7 @@ public class Player : MonoBehaviour
         if (second % bloon_regen_interval == 0) Earn(bloon_regen_amount);
     }
 
-    public Card ChooseCard(Card card)
+    public void ChooseCard(Card card)
     {
         switch (card.type)
         {
@@ -110,15 +110,12 @@ public class Player : MonoBehaviour
                 //damage formula
                 boss.Damage((card.action_value + dmg_flat) * dmg_mult);
                 //after damage is done, the dmg multiplier is set to 0
-                dmg_mult = 0.0f;
+                dmg_mult = 0;
                 //however if damage flat buff is in play, 
                 //use a counter to count down the duration of the buff based on the number of times damage has been done
                 dmg_flat_duration--;
                 if (dmg_flat_duration == 0)
-                {
-                    //remove the flat dmg buff
-                    dmg_flat = 0;
-                }
+                    dmg_flat = 0; //remove the flat dmg buff
                 break;
             case CardType.SHUF:
                 ShuffleCards();
@@ -132,28 +129,21 @@ public class Player : MonoBehaviour
                 break;
             case CardType.DMG_BUFF:
                 //set damage flat buff number to the action value assigned to the number and set the buff duration
-                dmg_flat = action.action_value;
+                dmg_flat = card.action_value;
                 dmg_flat_duration = 3;
                 break;
             case CardType.DOUBLE_DMG:
-                dmg_mult = action.action_value;
+                dmg_mult = card.action_value;
                 break;
             case CardType.ENDURE:
                 endure_active = true;
                 break;
         }
         Spend(card.cost);
-        cards_played++;
-
-
-        Card random_card = NextCard();
-        last_received_card_type = random_card.type;
-        
         Manage();
-        return random_card;
     }
     
-    private Card NextCard()
+    public Card NextCard()
     {
         int total = 0;
         for (int i = 1; i < all_cards.Length; i++)
@@ -168,8 +158,11 @@ public class Player : MonoBehaviour
         {
             if (all_cards[i] == null || all_cards[i].type == CardType.NONE || all_cards[i].type == CardType.END) continue;
             cumulative += all_cards[i].frequency;
+            last_received_card_type = all_cards[i].type;
             if (roll < cumulative) return all_cards[i];
         }
+
+        last_received_card_type = all_cards[1].type;
         return all_cards[1];
     }
 
@@ -187,7 +180,7 @@ public class Player : MonoBehaviour
     public void Damage(int amount)
     {
         health -= amount;
-        if ((endure_active == true) && health <= 0) 
+        if (endure_active && health <= 0)
         {
             health = 1;
             endure_active = false;
