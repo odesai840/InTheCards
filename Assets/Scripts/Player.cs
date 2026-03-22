@@ -79,6 +79,8 @@ public class Player : MonoBehaviour
 
     [SerializeField] private CardManager card_manager;
 
+    private bool parry = false;
+
     private void Awake()
     {
         all_cards = new Card[Convert.ToInt32(CardType.END)];
@@ -173,6 +175,7 @@ public class Player : MonoBehaviour
             //chris cards
             case CardType.PARRY:
                 //implement boss parry
+                parry = true;
                 break;
             case CardType.DMG_BUFF:
                 //set damage flat buff number to the action value assigned to the number and set the buff duration
@@ -234,7 +237,11 @@ public class Player : MonoBehaviour
 
     public void Damage(int amount)
     {
-        health -= amount;
+        if (!parry)
+            health -= amount;
+        else
+            parry = false;
+        
         if (health <= 0)
         {
             if (endure_active)
