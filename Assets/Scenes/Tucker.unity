@@ -198,6 +198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   cardPreFab: {fileID: 8707053411220511921, guid: 891a5b7604692084b8d352d65de3a162, type: 3}
+  player: {fileID: 0}
   cardSpawnPoint: {fileID: 185558984}
   handCenter: {fileID: 592245961}
   cardSpacing: 0.5
@@ -210,7 +211,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 266926511}
-  - component: {fileID: 266926510}
+  - component: {fileID: 266926512}
   m_Layer: 0
   m_Name: Boss
   m_TagString: Untagged
@@ -218,20 +219,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &266926510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 266926509}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c8709259186954544b088b70b501ab95, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Boss
-  max_health: 0
-  player: {fileID: 0}
 --- !u!4 &266926511
 Transform:
   m_ObjectHideFlags: 0
@@ -245,6 +232,63 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &266926512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 266926509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8709259186954544b088b70b501ab95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boss
+  player: {fileID: 563021504}
+  max_health: 1000
+  max_chips: 10
+  chip_regen_interval: 3
+  chip_regen_amount: 1
+  poker_chip_prefab: {fileID: 919132149155446097, guid: 1e8f4318f3001d542ab7b6677f431d83, type: 3}
+  cannon: {fileID: 919132149155446097, guid: 35015a9c4511f79478fe4767837718c0, type: 3}
+  fuse: {fileID: 8919303501013784944, guid: 61372a796cf501948b968c773e4ae2ad, type: 3}
+  explosion: {fileID: 8345342515777981390, guid: ce3d174338c7c494f83456ca6e029849, type: 3}
+  cannonSpawnPoint: {fileID: 376769812}
+  fuseSpawnPoint: {fileID: 1764506617}
+  fireSpawnPoint: {fileID: 1106392934}
+--- !u!1 &376769812
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 376769813}
+  m_Layer: 0
+  m_Name: CannonSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &376769813
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 376769812}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.84, y: 3.21, z: 0.19}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1764506618}
+  - {fileID: 1106392935}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &387900172
@@ -516,12 +560,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89ff566cb6d6a4e42b5553e3d8dd8f1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  boss: {fileID: 0}
   max_health: 20
   max_bloons: 10
   bloon_regen_interval: 2
   bloon_regen_amount: 1
-  boss: {fileID: 266926510}
   max_hand: 5
+  bloons_spawn: {fileID: 0}
+  bloon_prefab: {fileID: 919132149155446097, guid: e692dcecaf5596a43b6102128e8f2914, type: 3}
 --- !u!4 &563021505
 Transform:
   m_ObjectHideFlags: 0
@@ -598,6 +644,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 185558985}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1106392934
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1106392935}
+  m_Layer: 0
+  m_Name: fireSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1106392935
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106392934}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.06, y: 1.55, z: -5.67}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 376769813}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1163693472
 GameObject:
@@ -768,6 +845,37 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &1764506617
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1764506618}
+  m_Layer: 0
+  m_Name: FuseSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1764506618
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764506617}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.16, y: 2.52, z: -1.03}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 376769813}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1856061954
 GameObject:
   m_ObjectHideFlags: 0
@@ -892,3 +1000,4 @@ SceneRoots:
   - {fileID: 1856061958}
   - {fileID: 563021505}
   - {fileID: 266926511}
+  - {fileID: 376769813}

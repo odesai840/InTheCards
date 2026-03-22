@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
+
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public enum ActionType
+public enum ActionYeaType
 {
     NONE = 0,
     DMG_PLR,
@@ -15,15 +16,15 @@ public enum ActionType
 }
 
 [System.Serializable]
-public class Action
+public class ActionYea
 {
-    public ActionType type = ActionType.NONE;
+    public ActionYeaType type = ActionYeaType.NONE;
     public int cost = 0;
     public int action_value = 0;
     public int frequency = 100;
     public int since_last_use = 0;
 
-    public Action(ActionType t, int c, int av, int f)
+    public ActionYea(ActionYeaType t, int c, int av, int f)
     {
         this.type = t;
         this.cost = c;
@@ -32,7 +33,7 @@ public class Action
     }
 }
 
-public class Boss : MonoBehaviour
+public class BossTucker : MonoBehaviour
 {
     private float timer = 0.0f;
 
@@ -46,26 +47,19 @@ public class Boss : MonoBehaviour
     [SerializeField] private int chip_regen_interval = 3;
     [SerializeField] private int chip_regen_amount = 1;
 
-    private Action[] all_actions;
-    private ActionType last_action_type = ActionType.NONE;
-    
-    [SerializeField] private GameObject poker_chip_prefab;
-    private GameObject[] chip_pool;
+    private ActionYea[] all_actions;
+    private ActionYeaType last_action_type = ActionYeaType.NONE;
     
     void Start()
     {
-        all_actions = new Action[Convert.ToInt32(ActionType.END)];
-        all_actions[Convert.ToInt32(ActionType.DMG_PLR)] = new Action(ActionType.DMG_PLR, 1, 5, 100);
-        all_actions[Convert.ToInt32(ActionType.DMG_PLR_BIG)] = new Action(ActionType.DMG_PLR_BIG, 4, 15, 60);
-        all_actions[Convert.ToInt32(ActionType.DMG_PLR_BIG_BIG)] = new Action(ActionType.DMG_PLR_BIG_BIG, 10, 50, 10);
-        all_actions[Convert.ToInt32(ActionType.HEAL_BOSS)] = new Action(ActionType.HEAL_BOSS, 1, 10, 100);
-        all_actions[Convert.ToInt32(ActionType.SHUF_PLR)] = new Action(ActionType.SHUF_PLR, 8, 0, 20);
-        
-        chip_pool = new GameObject[25];
-        for(int i = 0; i < 25; i++)
-        {
-            chip_pool[i] = Instantiate(poker_chip_prefab, transform.position,  Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up));
-        }
+        all_actions = new ActionYea[Convert.ToInt32(ActionYeaType.END)];
+        all_actions[Convert.ToInt32(ActionYeaType.DMG_PLR)] = new ActionYea(ActionYeaType.DMG_PLR, 1, 5, 100);
+        all_actions[Convert.ToInt32(ActionYeaType.DMG_PLR_BIG)] = new ActionYea(ActionYeaType.DMG_PLR_BIG, 4, 15, 60);
+        all_actions[Convert.ToInt32(ActionYeaType.DMG_PLR_BIG_BIG)] = new ActionYea(ActionYeaType.DMG_PLR_BIG_BIG, 10, 50, 10);
+        all_actions[Convert.ToInt32(ActionYeaType.HEAL_BOSS)] = new ActionYea(ActionYeaType.HEAL_BOSS, 1, 10, 100);
+        all_actions[Convert.ToInt32(ActionYeaType.SHUF_PLR)] = new ActionYea(ActionYeaType.SHUF_PLR, 8, 0, 20);
+
+
 
         BigBigAttack();
     }
@@ -76,13 +70,11 @@ public class Boss : MonoBehaviour
         int second = Mathf.RoundToInt(timer);
 
         if (second % chip_regen_interval == 0) Earn(chip_regen_amount);
-
-        
     }
 
-    // Choose Action
-    public Action Wethepeopleoftheunitedstatesinordertoformamoreperfectunionestablishjusticeinsuredomestictranquilityprovidforthecommondefencepromotethegeneralwelfareadnsecuretheblessingsoflibertytoourselvesandourposteritydoordainandestablishthisconstitutionfortheunitedstatesofamerica
-        (Action action)
+    // Choose ActionYea
+    public ActionYea Wethepeopleoftheunitedstatesinordertoformamoreperfectunionestablishjusticeinsuredomestictranquilityprovidforthecommondefencepromotethegeneralwelfareadnsecuretheblessingsoflibertytoourselvesandourposteritydoordainandestablishthisconstitutionfortheunitedstatesofamerica
+        (ActionYea action)
     {
         for (int i = 0; i < all_actions.Length; i++)
         {
@@ -94,103 +86,62 @@ public class Boss : MonoBehaviour
         switch (action.type)
         {
             default:
-            case ActionType.NONE:
-            case ActionType.END:
+            case ActionYeaType.NONE:
+            case ActionYeaType.END:
                 break;
-            case ActionType.DMG_PLR:
-                PlayDamagePlayerAnim();
+            case ActionYeaType.DMG_PLR:
+            case ActionYeaType.DMG_PLR_BIG: 
+            case  ActionYeaType.DMG_PLR_BIG_BIG:
+                //BigBigAttack();
                 player.Damage(action.action_value);
                 break;
-            case ActionType.DMG_PLR_BIG: 
-            case  ActionType.DMG_PLR_BIG_BIG:
-                player.Damage(action.action_value);
-                break;
-            case ActionType.HEAL_BOSS:
+            case ActionYeaType.HEAL_BOSS:
                 Heal(action.action_value);
                 break;
-            case ActionType.SHUF_PLR:
+            case ActionYeaType.SHUF_PLR:
                 player.ShuffleCards();
                 break;
         }
         
         // ready next action
-        Action random_action = NextAction();
+        ActionYea random_action = NextActionYea();
         last_action_type = random_action.type;
         
         Manage();
         return random_action;
     }
 
-    private Action NextAction()
+    private ActionYea NextActionYea()
     {
         int total = 0;
         for (int i = 1; i < all_actions.Length; i++)
         {
-            if (all_actions[i] == null || all_actions[i].type == ActionType.NONE || all_actions[i].type == ActionType.END) continue;
+            if (all_actions[i] == null || all_actions[i].type == ActionYeaType.NONE || all_actions[i].type == ActionYeaType.END) continue;
             
-            total += Convert.ToInt32(CalculateActionWeight(all_actions[i]));
+            total += Convert.ToInt32(CalculateActionYeaWeight(all_actions[i]));
         }
 
         int roll = Random.Range(0, total);
         int cumulative = 0;
         for (int i = 1; i < all_actions.Length; i++)
         {
-            if (all_actions[i] == null || all_actions[i].type == ActionType.NONE || all_actions[i].type == ActionType.END) continue;
-            cumulative += Convert.ToInt32(CalculateActionWeight(all_actions[i]));
+            if (all_actions[i] == null || all_actions[i].type == ActionYeaType.NONE || all_actions[i].type == ActionYeaType.END) continue;
+            cumulative += Convert.ToInt32(CalculateActionYeaWeight(all_actions[i]));
             if (roll < cumulative) return all_actions[i];
         }
         return all_actions[1];
     }
 
-    private float CalculateActionWeight(Action action)
+    private float CalculateActionYeaWeight(ActionYea action)
     {
         float weight = action.frequency + action.since_last_use;
-        if (action.type == ActionType.HEAL_BOSS && (float)health / max_health < 0.5f)
+        if (action.type == ActionYeaType.HEAL_BOSS && (float)health / max_health < 0.5f)
             weight += (int)(50.0f * Mathf.Pow(2, (1 - ((float)health/max_health)) * 4.0f));
-        if (action.type == ActionType.DMG_PLR_BIG_BIG && action.since_last_use > 10)
+        if (action.type == ActionYeaType.DMG_PLR_BIG_BIG && action.since_last_use > 10)
             weight += 50;
             
         if (action.cost > chips || action.type == last_action_type) weight = 0.0f;
         return weight;
-    }
-    
-    private void PlayDamagePlayerAnim()
-    {
-        StartCoroutine(MoveChipRoutine(0.75f, i => ResetChips()));
-    }
-    
-    private IEnumerator MoveChipRoutine(float duration, Action<int> callback)
-    {
-        float elapsed_time = 0.0f;
-        Vector3[] target_points = new Vector3[chip_pool.Length];
-        
-        for(int i = 0; i < chip_pool.Length; i++){
-            Vector2 point = Random.insideUnitCircle * 0.75f;
-            target_points[i] = new Vector3(0.0f, point.y, point.x);
-            target_points[i] += player.transform.position;
-        }
-        
-        while (elapsed_time < duration)
-        {
-            for(int i = 0; i < chip_pool.Length; i++){
-                chip_pool[i].transform.position = Vector3.Lerp(chip_pool[i].transform.position, target_points[i], 5.0f * Time.deltaTime);
-                chip_pool[i].transform.RotateAround(chip_pool[i].transform.position, Vector3.up, 5.0f);
-            }
-            
-            elapsed_time += Time.deltaTime;
-            
-            yield return null;
-        }
-        
-        callback(1);
-    }
-    
-    private void ResetChips()
-    {
-        foreach (GameObject chip in chip_pool)
-        {
-            chip.transform.position = transform.position;
-        }
     }
     
     public void Damage(int amount)
@@ -222,9 +173,14 @@ public class Boss : MonoBehaviour
 
 
 
+
+
+
+
+
     public GameObject cannon;
     public GameObject fuse;
-    public GameObject explosion; // cannon explosion
+    public GameObject fire; // cannon explosion
 
     public GameObject cannonSpawnPoint;
     public GameObject fuseSpawnPoint;
@@ -268,7 +224,8 @@ public class Boss : MonoBehaviour
         yield return new WaitForSeconds(duration);
         Destroy(fuseObj);
         // FIRE CANNON HERE **********
-        GameObject fireObj = Instantiate(explosion, fireSpawnPoint.transform.position, Quaternion.identity); // Creates visual of cannon exploding
+        GameObject fireObj = Instantiate(fire, fireSpawnPoint.transform.position, Quaternion.identity); // Creates visual of cannon exploding
         UnityEngine.Debug.Log("Destroy Fuse");
     }
+
 }

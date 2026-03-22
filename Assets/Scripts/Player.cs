@@ -27,13 +27,15 @@ public class Card
     public int cost = 0;
     public int action_value = 0;
     public int frequency = 100;
+    public Texture2D texture;
 
-    public Card(CardType t, int c, int av, int f)
+    public Card(CardType _type, int _cost, int _action_value, int _frequency, Texture2D _texture)
     {
-        this.type = t;
-        this.cost = c;
-        this.action_value = av;
-        this.frequency = f;
+        this.type = _type;
+        this.cost = _cost;
+        this.action_value = _action_value;
+        this.frequency = _frequency;
+        this.texture = _texture;
     }
 }
 
@@ -48,7 +50,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private int max_bloons = 10;
     private int bloons;
-    [SerializeField] private int bloon_regen_interval = 2;
+    [SerializeField] private int bloon_regen_interval = 3;
     [SerializeField] private int bloon_regen_amount = 1;
 
     [SerializeField] private int max_hand = 5;
@@ -64,25 +66,39 @@ public class Player : MonoBehaviour
     //boolean to check endure status
     private bool endure_active = false;
 
+    [SerializeField] private GameObject bloons_spawn;
+    [SerializeField] private GameObject bloon_prefab;
+    private GameObject[] bloons_pool;
+
+    private void Awake()
+    {
+        all_cards = new Card[Convert.ToInt32(CardType.END)];
+        all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 100, Resources.Load<Texture2D>("Cards/c1"));
+        all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 5, 100, Resources.Load<Texture2D>("Cards/c2"));
+        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 3, 30, 70, Resources.Load<Texture2D>("Cards/c3"));
+        all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 30, Resources.Load<Texture2D>("Cards/c4"));
+        all_cards[Convert.ToInt32(CardType.GIVE_BLOONS)] = new Card(CardType.GIVE_BLOONS, 2, 5, 30, Resources.Load<Texture2D>("Cards/c5"));
+
+        //chris cards
+        all_cards[Convert.ToInt32(CardType.PARRY)] = new Card(CardType.PARRY, 5, 0, 30, Resources.Load<Texture2D>("Cards/c6"));
+        all_cards[Convert.ToInt32(CardType.DMG_BUFF)] = new Card(CardType.DMG_BUFF, 4, 4, 60, Resources.Load<Texture2D>("Cards/c7"));
+        all_cards[Convert.ToInt32(CardType.DOUBLE_DMG)] = new Card(CardType.DOUBLE_DMG, 4, 2, 50, Resources.Load<Texture2D>("Cards/c8"));
+        all_cards[Convert.ToInt32(CardType.ENDURE)] = new Card(CardType.ENDURE, 3, 1, 30, Resources.Load<Texture2D>("Cards/c9"));
+        all_cards[Convert.ToInt32(CardType.FIREBALL)] = new Card(CardType.FIREBALL, 10, 50, 10, Resources.Load<Texture2D>("Cards/c10"));
+        
+        ShuffleCards();
+    }
+
     void Start()
     {
         health = max_health;
-
-        all_cards = new Card[Convert.ToInt32(CardType.END)];
-        all_cards[Convert.ToInt32(CardType.HEAL_PLR)] = new Card(CardType.HEAL_PLR, 3, 10, 100);
-        all_cards[Convert.ToInt32(CardType.DMG_BOSS)] = new Card(CardType.DMG_BOSS, 2, 5, 100);
-        all_cards[Convert.ToInt32(CardType.DMG_BOSS_BIG)] = new Card(CardType.DMG_BOSS_BIG, 3, 30, 70);
-        all_cards[Convert.ToInt32(CardType.SHUF)] = new Card(CardType.SHUF, 3, 0, 30);
-        all_cards[Convert.ToInt32(CardType.GIVE_BLOONS)] = new Card(CardType.GIVE_BLOONS, 2, 5, 30);
-
-        //chris cards
-        all_cards[Convert.ToInt32(CardType.PARRY)] = new Card(CardType.PARRY, 5, 0, 30);
-        all_cards[Convert.ToInt32(CardType.DMG_BUFF)] = new Card(CardType.DMG_BUFF, 4, 4, 60);
-        all_cards[Convert.ToInt32(CardType.DOUBLE_DMG)] = new Card(CardType.DOUBLE_DMG, 4, 2, 50);
-        all_cards[Convert.ToInt32(CardType.ENDURE)] = new Card(CardType.ENDURE, 3, 1, 30);
-        all_cards[Convert.ToInt32(CardType.FIREBALL)] = new Card(CardType.FIREBALL, 10, 50, 10);
+        bloons = 0;
         
-        ShuffleCards();
+        bloons_pool = new GameObject[max_bloons];
+        for(int i = 0; i < max_bloons; i++)
+        {
+            bloons_pool[i] = Instantiate(bloon_prefab, transform.position,  Quaternion.AngleAxis(0.0f, Vector3.up));
+        }
     }
 
     private void Update()
@@ -90,7 +106,7 @@ public class Player : MonoBehaviour
         timer += Time.deltaTime;
         int second = Mathf.RoundToInt(timer);
 
-        if (second % bloon_regen_interval == 0) Earn(bloon_regen_amount);
+        if (second % bloon_regen_interval == 0 && bloons < max_bloons) Earn(bloon_regen_amount);
     }
 
     public void ChooseCard(Card card)
@@ -197,12 +213,24 @@ public class Player : MonoBehaviour
     public void Earn(int amount)
     {
         bloons += amount;
+
+        for (int i = 0; i < bloons; i++)
+        {
+            float offset = i * 0.05f;
+            bloons_pool[i].transform.position = new Vector3(bloons_spawn.transform.position.x + offset, bloons_spawn.transform.position.y + offset, bloons_spawn.transform.position.z);
+            bloons_pool[i].transform.eulerAngles = new Vector3(107, 41, 0);
+        }
     }
 
     private void Manage()
     {
         health = Mathf.Clamp(health, 0, max_health);
         bloons = Mathf.Clamp(bloons, 0, max_bloons);
+    }
+
+    private void DisplayBloons()
+    {
+        
     }
 
     public Card[] GetHand()
