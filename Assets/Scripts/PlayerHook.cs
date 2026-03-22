@@ -111,16 +111,15 @@ public class PlayerHook : MonoBehaviour
         
         yield return new WaitForSeconds(0.3f);
         
-        Destroy(rum);
-        
         while (Vector3.Distance(transform.position, hook_start_pos) > 0.005f || Quaternion.Angle(transform.rotation, hook_start_rot) > 1.0f)
         {
             transform.position = Vector3.Lerp(transform.position, hook_start_pos, 5.0f * Time.deltaTime);
             transform.rotation = Quaternion.Lerp(transform.rotation, hook_start_rot, 5.0f * Time.deltaTime);
             yield return null;
         }
-        
-        rum = Instantiate(rum_prefab, rum_spawn_pos, rum_spawn_rot);
+
+        rum.transform.position = rum_spawn_pos;
+        rum.transform.rotation = rum_spawn_rot;
         rum_hook_point = rum.transform.GetChild(0).position;
         
         Vector3 rum_table_pos = rum_spawn_pos + Vector3.up * 2.0f;

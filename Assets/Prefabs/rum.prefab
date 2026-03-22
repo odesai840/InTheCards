@@ -41,15 +41,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: c9f5c4c4665afbf439e117d20b57ac9e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 30.000002
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9f5c4c4665afbf439e117d20b57ac9e, type: 3}
       propertyPath: m_LocalScale.y
-      value: 30.000002
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9f5c4c4665afbf439e117d20b57ac9e, type: 3}
       propertyPath: m_LocalScale.z
-      value: 60.000004
+      value: 18.822
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9f5c4c4665afbf439e117d20b57ac9e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -109,9 +109,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c9f5c4c4665afbf439e117d20b57ac9e, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3001241142396023448}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c9f5c4c4665afbf439e117d20b57ac9e, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7357047622224904297}
   m_SourcePrefab: {fileID: 100100000, guid: c9f5c4c4665afbf439e117d20b57ac9e, type: 3}
 --- !u!4 &8078629742667234066 stripped
 Transform:
@@ -136,30 +133,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RumBottle
   boss: {fileID: 0}
---- !u!54 &7357047622224904297
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8887535411197747624}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
