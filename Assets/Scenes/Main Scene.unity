@@ -1612,7 +1612,7 @@ MonoBehaviour:
   boss: {fileID: 1877079}
   max_health: 100
   max_bloons: 10
-  bloon_regen_interval: 3
+  bloon_regen_interval: 1
   bloon_regen_amount: 1
   max_hand: 5
   bloons_spawn: {fileID: 513540344}
